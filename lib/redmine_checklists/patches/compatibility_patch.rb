@@ -17,12 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-resources :issues do
-  resources :checklists, :only => [:index, :create]
-end
-
-resources :checklists, :only => [:destroy, :update, :show] do
-  member do
-    put :done
-  end
+if Redmine::VERSION.to_s < '2.3'
+  Dir[File.dirname(__FILE__) + '/compatibility/2.1/*.rb'].each { |f| require f }
 end

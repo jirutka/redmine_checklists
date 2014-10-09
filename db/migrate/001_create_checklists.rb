@@ -17,12 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-resources :issues do
-  resources :checklists, :only => [:index, :create]
-end
+class CreateChecklists < ActiveRecord::Migration
 
-resources :checklists, :only => [:destroy, :update, :show] do
-  member do
-    put :done
+  def self.up
+    if ActiveRecord::Base.connection.table_exists? :issue_checklists
+      rename_table :issue_checklists, :checklists
+    else
+      create_table :checklists do |t|
+        t.boolean :is_done, :default => false
+        t.string :subject
+        t.integer :position, :default => 1
+        t.references :issue, :null => false
+      end
+    end
+  end
+
+  def self.down
+    drop_table :checklists
   end
 end

@@ -17,12 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-resources :issues do
-  resources :checklists, :only => [:index, :create]
+Rails.configuration.to_prepare do
+  require 'redmine_checklists/hooks/controller_issue_hook'
+  require 'redmine_checklists/hooks/views_issues_hook'
+
+  require 'redmine_checklists/patches/issue_patch'
+  require 'redmine_checklists/patches/issues_controller_patch'
+  require 'redmine_checklists/patches/add_helpers_for_checklists_patch'
+  require 'redmine_checklists/patches/compatibility_patch'
 end
 
-resources :checklists, :only => [:destroy, :update, :show] do
-  member do
-    put :done
-  end
+module RedmineChecklists
+
+  def self.settings() Setting[:plugin_redmine_checklists].blank? ? {} : Setting[:plugin_redmine_checklists] end
+
 end
+

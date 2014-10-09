@@ -17,12 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-resources :issues do
-  resources :checklists, :only => [:index, :create]
-end
 
-resources :checklists, :only => [:destroy, :update, :show] do
-  member do
-    put :done
+
+module RedmineChecklists
+  module Patches
+
+    module AddHelpersForChecklistPatch
+      def self.apply(controller)
+        controller.send(:helper, 'checklists')
+      end
+    end
   end
 end
+
+[IssuesController].each do |controller|
+  RedmineChecklists::Patches::AddHelpersForChecklistPatch.apply(controller)
+end
+
+
