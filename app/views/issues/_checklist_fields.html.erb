@@ -7,8 +7,7 @@
     <%= text_field_tag nil, f.object.subject, :class => 'edit-box'%>
     <%= f.hidden_field :subject, :class => 'checklist-subject-hidden' %>
   </span>
-  <span class= "checklist-edit-only checklist-edit-save-button"><%= submit_tag l(:button_save), :type => "button",
-                                                                      :class => "item item-save"%> </span>
+  <span class= "checklist-edit-only checklist-edit-save-button"><%= submit_tag l(:button_save), :type => "button", :class => "item item-save small"%> </span>
   <span class= "checklist-edit-only checklist-edit-reset-button"><% concat l(:button_cancel)
   %> </span>
   <span class = "checklist-show-only checklist-remove"><%= link_to_remove_checklist_fields "", f,

@@ -164,7 +164,7 @@ Redmine.Checklist = $.klass({
   },
 
   onIssueFormSubmitRemoveEmptyChecklistItems: function() {
-    $('#issue-form').on('submit', function(){
+    $('body').on('submit', '#issue-form', function(){
       $('.checklist-subject-hidden').each(function(i, elem) {
         if ($(elem).val() == "")
         {

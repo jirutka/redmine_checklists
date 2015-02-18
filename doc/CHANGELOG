@@ -4,6 +4,10 @@ Redmine Checklists plugin - managing issue checklists plugin for Redmine
 Copyright (C) 2011-2014 Kirill Bezrukov
 http://www.redminecrm.com/
 
+== 2014-12-09 v3.0.2
+
+* Fixed bug wuth empty subject with CKEditor plugin
+
 == 2014-09-15 v3.0.1
 
 * Bulgarian translation (Иван Ценов)

@@ -30,7 +30,7 @@ module RedmineChecklists
           has_many :checklists, :class_name => "Checklist", :dependent => :destroy, :inverse_of => :issue,
                    :order => 'position'
 
-          accepts_nested_attributes_for :checklists, :allow_destroy => true, :reject_if => :all_blank
+          accepts_nested_attributes_for :checklists, :allow_destroy => true, :reject_if => proc { |attrs| attrs["subject"].blank? }
 
           safe_attributes 'checklists_attributes',
             :if => lambda {|issue, user| (user.allowed_to?(:done_checklists, issue.project) ||

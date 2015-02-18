@@ -20,7 +20,7 @@
 require 'redmine'
 require 'redmine_checklists/redmine_checklists'
 
-CHECKLISTS_VERSION_NUMBER = '3.0.1'
+CHECKLISTS_VERSION_NUMBER = '3.0.2'
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
