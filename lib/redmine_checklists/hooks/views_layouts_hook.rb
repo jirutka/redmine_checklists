@@ -17,21 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-Rails.configuration.to_prepare do
-  require 'redmine_checklists/hooks/controller_issue_hook'
-  require 'redmine_checklists/hooks/views_issues_hook'
-  require 'redmine_checklists/hooks/views_layouts_hook'
-
-  require 'redmine_checklists/patches/issue_patch'
-  require 'redmine_checklists/patches/project_patch'
-  require 'redmine_checklists/patches/issues_controller_patch'
-  require 'redmine_checklists/patches/add_helpers_for_checklists_patch'
-  require 'redmine_checklists/patches/compatibility_patch'
-end
-
 module RedmineChecklists
-
-  def self.settings() Setting[:plugin_redmine_checklists].blank? ? {} : Setting[:plugin_redmine_checklists] end
-
+  module Hooks
+    class ViewsLayoutsHook < Redmine::Hook::ViewListener
+      def view_layouts_base_html_head(context={})
+        return javascript_include_tag(:checklists, :plugin => 'redmine_checklists') +
+          stylesheet_link_tag(:checklists, :plugin => 'redmine_checklists')
+      end
+    end
+  end
 end
-

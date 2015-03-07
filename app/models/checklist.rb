@@ -32,16 +32,19 @@ class Checklist < ActiveRecord::Base
                 :title => Proc.new {|o| o.subject },
                 :description => Proc.new {|o| "#{l(:field_issue)}:  #{o.issue.subject}" }
 
-  acts_as_activity_provider :type => "checklists",
-                            :permission => :view_checklists,
-                            :find_options => {:issue => :project}
 
   if ActiveRecord::VERSION::MAJOR >= 4
+    acts_as_activity_provider :type => "checklists",
+                              :permission => :view_checklists,
+                              :scope => preload({:issue => :project})
     acts_as_searchable :columns => ["#{table_name}.subject"],
                        :scope => lambda { includes([:issue => :project]).order("#{table_name}.id") },
                        :project_key => "#{Issue.table_name}.project_id"
 
   else
+    acts_as_activity_provider :type => "checklists",
+                              :permission => :view_checklists,
+                              :find_options => {:issue => :project}
     acts_as_searchable :columns => ["#{table_name}.subject"],
                        :include => [:issue => :project],
                        :project_key => "#{Issue.table_name}.project_id",

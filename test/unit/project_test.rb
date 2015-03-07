@@ -67,10 +67,10 @@ class ProjectTest < ActiveSupport::TestCase
     project_copy.identifier = Project.next_identifier
     project_copy.copy(Project.find(1))
 
-    checklists_copies = project_copy.issues.last.checklists
+    checklists_copies = project_copy.issues.where(:subject => 'TestIssue').first.checklists
     assert_equal(checklists_copies.count, 2)
-    assert_equal(checklists_copies.first.subject, 'TEST1')
-    assert_equal(checklists_copies.last.is_done, true)
+    assert_equal(checklists_copies.where(:subject => 'TEST1').first.is_done, false)
+    assert_equal(checklists_copies.where(:subject => 'TEST2').first.is_done, true)
   end
 
 end

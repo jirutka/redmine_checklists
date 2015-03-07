@@ -15,11 +15,6 @@
   </div>
 <% end %>
 
-<% content_for :header_tags do %>
-    <%= javascript_include_tag :checklists, :plugin => 'redmine_checklists'  %>
-    <%= stylesheet_link_tag :checklists, :plugin => 'redmine_checklists'  %>
-<% end %>
-
 <%= javascript_tag do %>
   <% unless User.current.allowed_to?(:done_checklists, @project) %>
     $("#checklist_items input").attr("disabled", true);

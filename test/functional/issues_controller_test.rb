@@ -88,7 +88,7 @@ class IssuesControllerTest < ActionController::TestCase
 
     @request.session[:user_id] = 1
     issue = Issue.find(1)
-    if Redmine::VERSION.to_s > '2.3'
+    if Redmine::VERSION.to_s > '2.3' && Redmine::VERSION.to_s < '3.0'
       xhr :put, :update_form,
                 :issue => parameters,
                 :project_id => issue.project
@@ -99,8 +99,12 @@ class IssuesControllerTest < ActionController::TestCase
     end
     assert_response :success
     assert_equal 'text/javascript', response.content_type
-    assert_template 'update_form'
 
+    if Redmine::VERSION.to_s < '3.0'
+      assert_template 'update_form'
+    else
+      assert_template 'new'
+    end
 
     issue = assigns(:issue)
     assert_kind_of Issue, issue
