@@ -17,17 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-module RedmineChecklists
-  module Patches
+class CreateChecklistTemplateCategory < ActiveRecord::Migration
 
-    module AddHelpersForChecklistPatch
-      def self.apply(controller)
-        controller.send(:helper, 'checklists')
-      end
+  def self.up
+    create_table :checklist_template_categories do |t|
+      t.string :name
+      t.integer :position, :default => 1
     end
   end
-end
 
-[IssuesController].each do |controller|
-  RedmineChecklists::Patches::AddHelpersForChecklistPatch.apply(controller)
+  def self.down
+    drop_table :checklist_template_categories
+  end
 end

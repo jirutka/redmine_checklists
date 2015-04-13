@@ -52,7 +52,6 @@ class CommonIssueTest < RedmineChecklists::IntegrationTest
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'
-    User.current = nil
     @project_1 = Project.find(1)
     @issue_1 = Issue.find(1)
     @checklist_1 = Checklist.find(1)

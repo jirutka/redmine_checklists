@@ -7,4 +7,14 @@ ru:
   permission_view_checklists: Просматривать чеклисты
   permission_done_checklists: Выполнять чеклисты
   permission_edit_checklists: Редактировать чеклисты
-
+  label_checklist_template_category_plural: Категории шаблонов чеклистов
+  label_checklist_template_category_new: Новая категория шаблонов чеклистов
+  field_checklist_template_category: Категория
+  label_checklist_templates: Шаблоны чеклистов
+  label_checklist_new_checklist_template: Новый шаблон чеклистов
+  field_template_items: Элементы шаблона
+  label_checklist_template: Шаблон чеклистов
+  label_add_checklists_from_template: Добавить из шаблона
+  label_select_template: "-- Выберите шаблон --"
+  label_checklist_category_not_specified: "-- Без категории --"
+  label_checklists_description: 'Для ввода нескольких значений вводите по одному на строку'
