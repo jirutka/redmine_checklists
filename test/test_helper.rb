@@ -23,7 +23,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../../test/test_helper')
 
 
 if ActiveRecord::VERSION::MAJOR >= 4
-  class RedmineChecklists::IntegrationTest < ActionDispatch::IntegrationTest; end
+  class RedmineChecklists::IntegrationTest < Redmine::IntegrationTest; end
 else
   class RedmineChecklists::IntegrationTest < ActionController::IntegrationTest; end
 end
