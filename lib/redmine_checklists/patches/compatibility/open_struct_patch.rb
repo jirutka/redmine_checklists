@@ -17,21 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-Rails.configuration.to_prepare do
-  require 'redmine_checklists/hooks/views_issues_hook'
-  require 'redmine_checklists/hooks/views_layouts_hook'
-  require 'redmine_checklists/hooks/controller_issues_hook'
+class OpenStruct2 < OpenStruct
+  undef id if defined?(id)
 
-  require 'redmine_checklists/patches/issue_patch'
-  require 'redmine_checklists/patches/project_patch'
-  require 'redmine_checklists/patches/issues_controller_patch'
-  require 'redmine_checklists/patches/add_helpers_for_checklists_patch'
-  require 'redmine_checklists/patches/compatibility_patch'
-  require 'redmine_checklists/patches/issues_helper_patch'
-  require 'redmine_checklists/patches/compatibility/open_struct_patch'
-  require 'redmine_checklists/patches/compatibility/journal_patch'
-end
+  def to_h
+    json
+  end
 
-module RedmineChecklists
-  def self.settings() Setting[:plugin_redmine_checklists].blank? ? {} : Setting[:plugin_redmine_checklists] end
+  def [](key)
+    json[key.to_s]
+  end
+
+  def json
+    return @json if @json
+    @json = JSON.parse(to_json)
+    @json = @json['table'] if @json.has_key?('table')
+    @json
+  end
 end

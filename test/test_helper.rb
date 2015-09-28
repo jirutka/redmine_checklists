@@ -49,6 +49,11 @@ class RedmineChecklists::TestCase
       r.save
     end
 
+    Role.find([2]).each do |r|
+      r.permissions << :manage_checklist_templates
+      r.save
+    end
+
   end
 
 end

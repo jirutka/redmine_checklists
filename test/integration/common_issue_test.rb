@@ -48,7 +48,6 @@ class CommonIssueTest < RedmineChecklists::IntegrationTest
                                          [:checklists])
 
 
-
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'
@@ -56,7 +55,7 @@ class CommonIssueTest < RedmineChecklists::IntegrationTest
     @issue_1 = Issue.find(1)
     @checklist_1 = Checklist.find(1)
     @request    = ActionController::TestRequest.new
- end
+   end
 
   test "Global search with checklist" do
     # log_user('admin', 'admin')

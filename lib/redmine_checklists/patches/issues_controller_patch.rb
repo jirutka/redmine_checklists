@@ -27,7 +27,7 @@ module RedmineChecklists
           unloadable # Send unloadable so it will not be unloaded in development
 
           alias_method_chain :build_new_issue_from_params, :checklist
-
+          before_filter :save_before_state, :only => [:update]
         end
 
 
@@ -53,7 +53,9 @@ module RedmineChecklists
           build_new_issue_from_params_without_checklist
         end
 
-
+        def save_before_state
+          @issue.old_checklists = @issue.checklists.to_json
+        end
       end
 
     end

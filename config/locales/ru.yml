@@ -18,3 +18,11 @@ ru:
   label_select_template: "-- Выберите шаблон --"
   label_checklist_category_not_specified: "-- Без категории --"
   label_checklists_description: 'Для ввода нескольких значений вводите по одному на строку'
+  label_checklist_item: Пункт чеклиста
+  label_checklist_deleted: удалён
+  label_checklist_changed_from: изменён с
+  label_checklist_changed_to: на
+  label_checklist_added: добавлен
+  label_checklist_done: выполнен
+  label_checklist_undone: не выполнен
+  label_checklist_updated: Пункт чеклиста изменен

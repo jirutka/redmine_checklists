@@ -75,19 +75,10 @@ class ChecklistsController < ApplicationController
 
   def done
     (render_403; return false) unless User.current.allowed_to?(:done_checklists, @checklist_item.issue.project)
-
-    old_checklist_item = @checklist_item.dup
-    @checklist_item.is_done = !@checklist_item.is_done
+    @checklist_item.is_done = params[:is_done] == 'true'
 
     if @checklist_item.save
-      if RedmineChecklists.settings[:save_log] && old_checklist_item.info != @checklist_item.info
-        journal = Journal.new(:journalized => @checklist_item.issue, :user => User.current)
-        journal.details << JournalDetail.new(:property => 'attr',
-                                              :prop_key => 'checklist',
-                                              :old_value => old_checklist_item.info,
-                                              :value => @checklist_item.info)
-        journal.save
-      end
+      Checklist.recalc_issue_done_ratio(@checklist_item.issue)
 
       if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings[:issue_done_ratio]
         done_checklist = @checklist_item.issue.checklists.map{|c| c.is_done ? 1 : 0}
@@ -116,7 +107,4 @@ class ChecklistsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     render_404
   end
-
-
-
 end

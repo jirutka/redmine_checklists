@@ -26,7 +26,9 @@ module RedmineChecklists
       def self.included(base) # :nodoc:
         base.class_eval do
           unloadable # Send unloadable so it will not be unloaded in development
+          attr_accessor :old_checklists
           attr_reader :copied_from
+
           if ActiveRecord::VERSION::MAJOR >= 4
             has_many :checklists,  lambda { order("#{Checklist.table_name}.position") }, :class_name => "Checklist", :dependent => :destroy, :inverse_of => :issue
           else
@@ -44,15 +46,11 @@ module RedmineChecklists
             issue = arg.is_a?(Issue) ? arg : Issue.visible.find(arg)
             issue.checklists.each{ |checklist| Checklist.create(checklist.attributes.except('id','issue_id').merge(:issue => self)) } if issue
           end
-          
         end
       end
-
     end
-
   end
 end
-
 
 unless Issue.included_modules.include?(RedmineChecklists::Patches::IssuePatch)
   Issue.send(:include, RedmineChecklists::Patches::IssuePatch)

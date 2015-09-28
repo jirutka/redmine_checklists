@@ -4,7 +4,12 @@ Redmine Checklists plugin - managing issue checklists plugin for Redmine
 Copyright (C) 2011-2015 Kirill Bezrukov
 http://www.redminecrm.com/
 
-== 2015-04-14 v3.1.1
+== 2015-09-25 v3.1.2
+
+* Issue history details
+* Templates permissions fixes
+
+== 2015-04-08 v3.1.0
 
 * Checklist templates
 

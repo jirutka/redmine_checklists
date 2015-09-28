@@ -1,6 +1,6 @@
 if(typeof(String.prototype.trim) === "undefined")
 {
-    String.prototype.trim = function() 
+    String.prototype.trim = function()
     {
         return String(this).replace(/^\s+|\s+$/g, '');
     };
@@ -139,6 +139,7 @@ Redmine.Checklist = $.klass({
     var val;
     if (valueToSet) {
       val = valueToSet
+      checklistItem.find('input.edit-box').val(val)
     } else {
       val = checklistItem.find('input.edit-box').val()
     }
@@ -267,7 +268,7 @@ Redmine.Checklist = $.klass({
     this.root.on('change', 'input.checklist-checkbox', $.proxy(function(event){
       checkbox = $(event.target)
       url = checkbox.attr('data_url')
-      $.ajax({type: "PUT", url: url, dataType: 'script'})
+      $.ajax({type: "PUT", url: url, data: { is_done: checkbox.prop('checked') }, dataType: 'script'})
     }, this))
   },
 
@@ -302,6 +303,7 @@ Redmine.Checklist = $.klass({
   },
 
   assignTemplateSelectedEvent: function() {
+    var item;
     this.root.on('change', '#checklist_template', $.proxy(function(){
       value = $('#checklist_template').val()
       selected = $('#checklist_template option[value='+value+']').data('template-items')

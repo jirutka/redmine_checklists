@@ -18,3 +18,11 @@ en:
   label_select_template: "-- Select template --"
   label_checklist_category_not_specified: "-- Not specified --"
   label_checklists_description: 'Multiple values allowed (one line for each value)'
+  label_checklist_item: Checklist item
+  label_checklist_deleted: deleted
+  label_checklist_changed_from: changed from
+  label_checklist_changed_to: to
+  label_checklist_added: added
+  label_checklist_done: set to Done
+  label_checklist_undone: set to Not done
+  label_checklist_updated: Checklist item edited

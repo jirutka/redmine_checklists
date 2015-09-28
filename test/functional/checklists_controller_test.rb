@@ -57,14 +57,27 @@ class ChecklistsControllerTest < ActionController::TestCase
     @checklist_1 = Checklist.find(1)
   end
 
-
   test "should post done" do
     # log_user('admin', 'admin')
     @request.session[:user_id] = 1
 
-    xhr :put, :done, :is_done => true, :id => "1"
-    assert_response :success, "Post done not working"
-    assert_equal true, Checklist.find(1).is_done, "Post done not working"
+    xhr :put, :done, :is_done => 'true', :id => '1'
+    assert_response :success, 'Post done not working'
+    assert_equal true, Checklist.find(1).is_done, 'Post done not working'
+  end
+
+  test 'sends email about checklists' do
+    @request.session[:user_id] = 1
+    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
+    User.find(2).create_email_address(:address => 'test@example.com') if Redmine::VERSION.to_s >= '3.0'
+    xhr :put, :done, :is_done => 'true', :id => '1'
+    assert ActionMailer::Base.deliveries.last
+    email = ActionMailer::Base.deliveries.last
+    assert_include 'Checklist item [x] First todo set to Done', email.text_part.body.to_s
+    # Test changes fixup
+    xhr :put, :done, :is_done => 'false', :id => '2'
+    email = ActionMailer::Base.deliveries.last
+    assert_include 'Checklist item [x] First todo set to Done', email.text_part.body.to_s
   end
 
   test "should not post done by deny user" do
@@ -90,15 +103,4 @@ class ChecklistsControllerTest < ActionController::TestCase
     get :show, :id => @issue_1.id
     assert_select 'ul#checklist_items', false, "Issue view for anonymous"
   end
-
-  def test_should_save_checklist_in_logs
-    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
-    @request.session[:user_id] = 1
-    post :done, :id => 1, :format => :js
-    assert_response :success
-    assert_equal(Issue.find(1), Journal.last.journalized)
-    assert_equal(1, Journal.last.details.where(:old_value => '[ ] First todo').count)
-    assert_equal(1, Journal.last.details.where(:value => '[x] First todo').count)
-  end
-
 end

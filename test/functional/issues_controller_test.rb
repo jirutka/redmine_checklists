@@ -111,4 +111,50 @@ class IssuesControllerTest < ActionController::TestCase
     assert_match 'First', issue.checklists.map(&:subject).join
   end
 
+  def test_update_sends_email
+    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
+    parameters = {:checklists_attributes => {
+                    "0" => {"is_done"=>"0", "subject"=>"Third"},
+                    "1" => {"is_done"=>"1", "subject"=>"Fourth"},
+                    "2" => {"id" => 2, "_destroy"=>"1", "subject"=>"Second todo"}
+                    } }
+
+    @request.session[:user_id] = 1
+    issue = Issue.find(1)
+    User.find(2).create_email_address(:address => 'test@example.com') if Redmine::VERSION.to_s >= '3.0'
+    xhr :put, :update,
+              :issue => parameters,
+              :project_id => issue.project,
+              :id => issue.to_param
+    assert ActionMailer::Base.deliveries.last
+    email = ActionMailer::Base.deliveries.last
+    assert_include 'Checklist item [ ] Third added', email.text_part.body.to_s
+    assert_include 'Checklist item [x] Fourth added', email.text_part.body.to_s
+    assert_include 'Checklist item deleted (Second todo)', email.text_part.body.to_s
+  end
+
+  def test_update_with_delete_write_to_journal
+    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
+    @request.session[:user_id] = 1
+    issue = Issue.find(1)
+    User.find(2).create_email_address(:address => 'test@example.com') if Redmine::VERSION.to_s >= '3.0'
+    #Create new checklist
+    xhr :put, :update,
+          :issue => { :notes => 'fix me',
+                      :checklists_attributes => {"0" => {"is_done"=>"0", "subject"=>"Five"}} },
+          :project_id => issue.project,
+          :id => issue.to_param
+    assert_response :redirect
+    issue.reload
+    #Delete new checklist
+    xhr :put, :update,
+              :issue => { :checklists_attributes => {"0" => {"id" => issue.checklists.max.id, "_destroy"=>"1", "subject"=>"First todo"} } },
+              :project_id => issue.project,
+              :id => issue.to_param
+    assert_response :redirect
+
+    get :show, :id => issue.id
+    assert_response :success
+    assert_select "#change-#{issue.journals.last.id} .details li", "Checklist item deleted (Five)"
+  end
 end
