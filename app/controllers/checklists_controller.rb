@@ -78,12 +78,9 @@ class ChecklistsController < ApplicationController
     @checklist_item.is_done = params[:is_done] == 'true'
 
     if @checklist_item.save
-      Checklist.recalc_issue_done_ratio(@checklist_item.issue)
-
       if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings[:issue_done_ratio]
-        done_checklist = @checklist_item.issue.checklists.map{|c| c.is_done ? 1 : 0}
-        @checklist_item.issue.done_ratio = (done_checklist.count(1) * 10) / done_checklist.count * 10
-        @checklist_item.issue.save
+        Checklist.recalc_issue_done_ratio(@checklist_item.issue.id)
+        @checklist_item.issue.reload
       end
     end
     respond_to do |format|

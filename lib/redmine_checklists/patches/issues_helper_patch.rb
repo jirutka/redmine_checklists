@@ -44,11 +44,17 @@ module RedmineChecklists
           return render_email_issue_attributes_without_checklists(issue, html) + details_to_strings_with_checklists(checklist_details, !html).join(html ? "<br/>".html_safe : "\n")
         end
 
-        def details_to_strings_with_checklists(details, no_html = false, options={})
+        def details_to_strings_with_checklists(details, no_html = false, options = {})
           details_checklist, details_other = details.partition{ |x| x.prop_key == 'checklist' }
           details_checklist.map do |detail|
             result = []
-            diff = JournalChecklistHistory.new(detail.old_value, detail.value).diff
+            diff = Hash.new([])
+
+            if Checklist.old_format?(detail)
+              result << "<b>#{l(:label_checklist_item)}</b> #{l(:label_checklist_changed_from)} #{detail.old_value} #{l(:label_checklist_changed_to)} #{detail.value}"
+            else
+              diff = JournalChecklistHistory.new(detail.old_value, detail.value).diff
+            end
 
             if diff[:done].any?
               diff[:done].each do |item|

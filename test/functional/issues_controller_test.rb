@@ -133,6 +133,24 @@ class IssuesControllerTest < ActionController::TestCase
     assert_include 'Checklist item deleted (Second todo)', email.text_part.body.to_s
   end
 
+  def test_added_attachment_shows_in_log_once
+    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
+    set_tmp_attachments_directory
+    parameters = { :tracker_id => 2,
+                   :checklists_attributes => {
+                     '0' => { 'is_done' => '0', 'subject' => 'First' },
+                     '1' => { 'is_done' => '0', 'subject' => 'Second' } } }
+    @request.session[:user_id] = 1
+    issue = Issue.find(1)
+    post :update,
+          :issue => parameters,
+          :attachments => { '1' => { 'file' => uploaded_test_file('testfile.txt', 'text/plain'), 'description' => 'test file' } },
+          :project_id => issue.project,
+          :id => issue.to_param
+    assert_response :redirect
+    assert_equal 1, Journal.last.details.where(:property => 'attachment').count
+  end
+
   def test_update_with_delete_write_to_journal
     Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
     @request.session[:user_id] = 1
@@ -157,4 +175,23 @@ class IssuesControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "#change-#{issue.journals.last.id} .details li", "Checklist item deleted (Five)"
   end
+
+  def test_history_dont_show_old_format_checklists
+    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
+    @request.session[:user_id] = 1
+    issue = Issue.find(1)
+    issue.journals.create!(:user_id => 1)
+    issue.journals.last.details.create!(:property =>  'attr',
+                                        :prop_key =>  'checklist',
+                                        :old_value => '[ ] TEST',
+                                        :value =>     '[x] TEST')
+
+    post :show, :id => issue.id
+    assert_response :success
+    last_journal = issue.journals.last
+    assert_equal last_journal.details.size, 1
+    assert_equal last_journal.details.first.prop_key, 'checklist'
+    assert_select "#change-#{last_journal.id} .details li", 'Checklist item changed from [ ] TEST to [x] TEST'
+  end
+
 end
