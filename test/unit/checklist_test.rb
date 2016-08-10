@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2015 Kirill Bezrukov
+# Copyright (C) 2011-2016 Kirill Bezrukov
 # http://www.redminecrm.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -89,5 +89,14 @@ class ChecklistTest < ActiveSupport::TestCase
     @checklist_1.is_done = 1
     assert_equal "[x] #{@checklist_1.subject}", @checklist_1.info, "Helper info broken"
   end
+
+  test "should not save checklist when subject length more then 255 symbols" do
+    @checklist_1.subject = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+                          ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
+                          parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec,
+                          pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec."
+    assert !@checklist_1.save, 'Save checklist when subject length more than 255 symbols'
+    assert !@checklist_1.errors.messages[:subject].nil?, 'have not error massege about subject'
+  end                          
 
 end

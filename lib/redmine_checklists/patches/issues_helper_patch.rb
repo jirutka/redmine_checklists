@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2015 Kirill Bezrukov
+# Copyright (C) 2011-2016 Kirill Bezrukov
 # http://www.redminecrm.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -58,13 +58,13 @@ module RedmineChecklists
 
             if diff[:done].any?
               diff[:done].each do |item|
-                result << "<b>#{l(:label_checklist_item)}</b> <input type='checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{item[:subject]}</i> #{l(:label_checklist_done)}"
+                result << "<b>#{ERB::Util.h l(:label_checklist_item)}</b> <input type='checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_done)}"
               end
             end
 
             if diff[:undone].any?
               diff[:undone].each do |item|
-                result << "<b>#{l(:label_checklist_item)}</b> <input type='checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{item[:subject]}</i> #{l(:label_checklist_undone)}"
+                result << "<b>#{ERB::Util.h l(:label_checklist_item)}</b> <input type='checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_undone)}"
               end
             end
 
@@ -75,6 +75,7 @@ module RedmineChecklists
               result = result.gsub /<input type='checkbox'[^c^>]*checked[^>]*>/, '[x]'
               result = result.gsub /<input type='checkbox'[^c^>]*>/, '[ ]'
               result = result.gsub /<[^>]*>/, ''
+              result = CGI.unescapeHTML(result)
             end
             result
           end.compact + details_to_strings_without_checklists(details_other, no_html, options)

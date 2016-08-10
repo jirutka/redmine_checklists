@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2015 Kirill Bezrukov
+# Copyright (C) 2011-2016 Kirill Bezrukov
 # http://www.redminecrm.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -54,6 +54,7 @@ class Checklist < ActiveRecord::Base
   acts_as_list
 
   validates_presence_of :subject
+  validates_length_of :subject, :maximum => 255
   validates_presence_of :position
   validates_numericality_of :position
 

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2015 Kirill Bezrukov
+# Copyright (C) 2011-2016 Kirill Bezrukov
 # http://www.redminecrm.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -32,6 +32,9 @@ class JournalChecklistHistory
     unless prev_journal
       return false
     end
+
+    return false if Time.zone.now > prev_journal.created_on + 1.minute
+
     prev_journal.details.all?{ |x| x.prop_key == 'checklist'} &&
       journal_details.journal.details.all?{ |x| x.prop_key == 'checklist'} &&
       journal_details.journal.notes.blank? &&
@@ -47,11 +50,9 @@ class JournalChecklistHistory
     checklist_details = prev_journal.details.find{ |x| x.prop_key == 'checklist'}
     if new(checklist_details.old_value, journal_details.value).empty_diff?
       prev_journal.destroy
-      journal_details.journal.send(:send_checklist_notification)
     else
       checklist_details.update_attribute(:value, journal_details.value)
       journal_details.journal.destroy unless journal_details.journal.new_record? && journal_details.journal.details.any?{ |x| x.prop_key != 'checklist'}
-      prev_journal.send(:send_checklist_notification)
     end
   end
 

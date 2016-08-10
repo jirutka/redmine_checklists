@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2015 Kirill Bezrukov
+# Copyright (C) 2011-2016 Kirill Bezrukov
 # http://www.redminecrm.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -64,20 +64,6 @@ class ChecklistsControllerTest < ActionController::TestCase
     xhr :put, :done, :is_done => 'true', :id => '1'
     assert_response :success, 'Post done not working'
     assert_equal true, Checklist.find(1).is_done, 'Post done not working'
-  end
-
-  test 'sends email about checklists' do
-    @request.session[:user_id] = 1
-    Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
-    User.find(2).create_email_address(:address => 'test@example.com') if Redmine::VERSION.to_s >= '3.0'
-    xhr :put, :done, :is_done => 'true', :id => '1'
-    assert ActionMailer::Base.deliveries.last
-    email = ActionMailer::Base.deliveries.last
-    assert_include 'Checklist item [x] First todo set to Done', email.text_part.body.to_s
-    # Test changes fixup
-    xhr :put, :done, :is_done => 'false', :id => '2'
-    email = ActionMailer::Base.deliveries.last
-    assert_include 'Checklist item [x] First todo set to Done', email.text_part.body.to_s
   end
 
   test "should not post done by deny user" do
