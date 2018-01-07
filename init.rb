@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,21 +20,21 @@
 require 'redmine'
 require 'redmine_checklists/redmine_checklists'
 
-CHECKLISTS_VERSION_NUMBER = '3.1.5'
+CHECKLISTS_VERSION_NUMBER = '3.1.10'
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
   name "Redmine Checklists plugin (#{CHECKLISTS_VERSION_TYPE})"
-  author 'RedmineCRM'
+  author 'RedmineUP'
   description 'This is a issue checklist plugin for Redmine'
   version CHECKLISTS_VERSION_NUMBER
-  url 'http://redminecrm.com'
-  author_url 'mailto:support@redminecrm.com'
+  url 'https://www.redmineup.com/pages/plugins/checklists'
+  author_url 'mailto:support@redmineup.com'
 
-  requires_redmine :version_or_higher => '2.1'
+  requires_redmine :version_or_higher => '2.3'
 
   settings :default => {
-    :save_log => false,
+    :save_log => true,
     :issue_done_ratio => false
   }, :partial => 'settings/checklists/checklists'
 
@@ -49,5 +49,4 @@ Redmine::Plugin.register :redmine_checklists do
   Redmine::Search.map do |search|
     # search.register :checklists
   end
-
 end

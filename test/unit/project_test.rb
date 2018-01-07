@@ -3,8 +3,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,11 +59,9 @@ class ProjectTest < ActiveSupport::TestCase
     @checklist_1 = Checklist.create(:subject => 'TEST2', :position => 2, :issue => @issue_1, :is_done => true)
   end
 
-
-
-  test "should copy checklists" do
+  test 'should copy checklists' do
     project_copy = Project.copy_from(Project.find(1))
-    project_copy.name = "Test name"
+    project_copy.name = 'Test name'
     project_copy.identifier = Project.next_identifier
     project_copy.copy(Project.find(1))
 
@@ -72,5 +70,4 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal(checklists_copies.where(:subject => 'TEST1').first.is_done, false)
     assert_equal(checklists_copies.where(:subject => 'TEST2').first.is_done, true)
   end
-
 end

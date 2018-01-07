@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,14 +21,12 @@ require_dependency 'project'
 
 module RedmineChecklists
   module Patches
-
     module ProjectPatch
       def self.included(base) # :nodoc:
         base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable # Send unloadable so it will not be unloaded in development
           alias_method_chain :copy_issues, :checklist
-
         end
       end
 
@@ -38,14 +36,10 @@ module RedmineChecklists
           copy_issues_without_checklist(project)
           issues.each{ |issue| issue.copy_checklists(issue.copied_from)}
         end
-
       end
-
     end
-
   end
 end
-
 
 unless Project.included_modules.include?(RedmineChecklists::Patches::ProjectPatch)
   Project.send(:include, RedmineChecklists::Patches::ProjectPatch)

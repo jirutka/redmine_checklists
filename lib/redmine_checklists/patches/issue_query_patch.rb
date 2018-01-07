@@ -17,21 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-Rails.configuration.to_prepare do
-  require 'redmine_checklists/hooks/views_issues_hook'
-  require 'redmine_checklists/hooks/views_layouts_hook'
-  require 'redmine_checklists/hooks/controller_issues_hook'
-
-  require 'redmine_checklists/patches/issue_patch'
-  require 'redmine_checklists/patches/project_patch'
-  require 'redmine_checklists/patches/issues_controller_patch'
-  require 'redmine_checklists/patches/add_helpers_for_checklists_patch'
-  require 'redmine_checklists/patches/compatibility_patch'
-  require 'redmine_checklists/patches/issues_helper_patch'
-  require 'redmine_checklists/patches/compatibility/open_struct_patch'
-  require 'redmine_checklists/patches/compatibility/journal_patch'
-end
+require_dependency 'query'
 
 module RedmineChecklists
-  def self.settings() Setting[:plugin_redmine_checklists].blank? ? {} : Setting[:plugin_redmine_checklists] end
+  module Patches
+    module IssueQueryPatch
+      def self.included(base)
+        base.send(:include, InstanceMethods)
+      end
+
+      module InstanceMethods
+      end
+    end
+  end
+end
+
+unless IssueQuery.included_modules.include?(RedmineChecklists::Patches::IssueQueryPatch)
+  IssueQuery.send(:include, RedmineChecklists::Patches::IssueQueryPatch)
 end

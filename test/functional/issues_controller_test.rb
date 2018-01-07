@@ -3,8 +3,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -57,6 +57,11 @@ class IssuesControllerTest < ActionController::TestCase
   def setup
     @request.session[:user_id] = 1
   end
+
+  def test_new_issue_without_project
+    get :new
+    assert_response :success
+  end if Redmine::VERSION.to_s > '3.0'
 
   def test_get_show_issue
     issue = Issue.find(1)
@@ -156,4 +161,40 @@ class IssuesControllerTest < ActionController::TestCase
     assert_equal journals_before, issue.reload.journals.count
   end
 
+  def test_create_issue_without_checklists
+    @request.session[:user_id] = 1
+    assert_difference 'Issue.count' do
+      post :create, :project_id => 1, :issue => { :tracker_id => 3,
+                                                  :status_id => 2,
+                                                  :subject => 'NEW issue without checklists',
+                                                  :description => 'This is the description'
+                                                }
+    end
+    assert_redirected_to :controller => 'issues', :action => 'show', :id => Issue.last.id
+
+    issue = Issue.find_by_subject('NEW issue without checklists')
+    assert_not_nil issue
+  end
+
+  def test_create_issue_using_json
+    old_value = Setting.rest_api_enabled
+    Setting.rest_api_enabled = '1'
+    @request.session[:user_id] = 1
+    assert_difference 'Issue.count' do
+      post :create, :format => :json, :project_id => 1, :issue => { :tracker_id => 3,
+                                                                    :status_id => 2,
+                                                                    :subject => 'NEW JSON issue',
+                                                                    :description => 'This is the description',
+                                                                    :checklists_attributes => [{:is_done => 0, :subject => 'JSON checklist'}]
+                                                                  },
+                                                        :key => User.find(1).api_key
+    end
+    assert_response :created
+
+    issue = Issue.find_by_subject('NEW JSON issue')
+    assert_not_nil issue
+    assert_equal 1, issue.checklists.count
+  ensure
+    Setting.rest_api_enabled = old_value
+  end
 end

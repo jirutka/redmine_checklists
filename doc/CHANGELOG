@@ -1,8 +1,38 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2016 Kirill Bezrukov
-http://www.redminecrm.com/
+Copyright (C) 2011-2017 RedmineUP
+http://www.redmineup.com/
+
+== 2017-10-12 v3.1.10
+
+* Fixed email notification bug
+* Fixed empty project issues bug
+
+== 2017-09-23 v3.1.9
+
+* Fixed bug with creating issues without checklist
+
+== 2017-09-21 v3.1.8
+
+* Default templates bug fixed
+
+== 2017-08-30 v3.1.7
+
+* Assigned tracker for checklist template
+* Fixed bug with coping project and issue with subissues
+* Fixed settings saving bug
+* 512 characters in checklist subjects (Ondřej Kudlík)
+* Fixed bug for markdown
+
+== 2017-07-07 v3.1.6
+
+* Redmine 3.4 support
+* New checklists filters for issues table
+* Save log by default 
+* Chinese translation update
+* Polish translation update
+* Fixed bug with template editing 
 
 == 2016-08-15 v3.1.5
 

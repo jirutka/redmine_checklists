@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class Checklist < ActiveRecord::Base
   end
   acts_as_event :datetime => :created_at,
                 :url => Proc.new {|o| {:controller => 'issues', :action => 'show', :id => o.issue_id}},
-                :type => 'issue-closed',
+                :type => 'issue issue-closed',
                 :title => Proc.new {|o| o.subject },
                 :description => Proc.new {|o| "#{l(:field_issue)}:  #{o.issue.subject}" }
 
@@ -54,13 +54,13 @@ class Checklist < ActiveRecord::Base
   acts_as_list
 
   validates_presence_of :subject
-  validates_length_of :subject, :maximum => 255
+  validates_length_of :subject, :maximum => 512
   validates_presence_of :position
   validates_numericality_of :position
 
   def self.recalc_issue_done_ratio(issue_id)
     issue = Issue.find(issue_id)
-    return false if (Setting.issue_done_ratio != "issue_field") || !RedmineChecklists.settings[:issue_done_ratio] || issue.checklists.empty?
+    return false if (Setting.issue_done_ratio != "issue_field") || RedmineChecklists.settings["issue_done_ratio"].to_i < 1 || issue.checklists.empty?
     done_checklist = issue.checklists.map{|c| c.is_done ? 1 : 0}
     done_ratio = (done_checklist.count(1) * 10) / done_checklist.count * 10
     issue.update_attribute(:done_ratio, done_ratio)
@@ -73,16 +73,20 @@ class Checklist < ActiveRecord::Base
 
   safe_attributes 'subject', 'position', 'issue_id', 'is_done'
 
-  def editable_by?(usr=User.current)
-    usr && (usr.allowed_to?(:edit_checklists, project) || (self.author == usr && usr.allowed_to?(:edit_own_checklists, project)))
+  def editable_by?(usr = User.current)
+    usr && (usr.allowed_to?(:edit_checklists, project) || (author == usr && usr.allowed_to?(:edit_own_checklists, project)))
   end
 
   def project
-    self.issue.project if self.issue
+    issue.project if issue
   end
 
   def info
-    "[#{self.is_done ? 'x' : ' ' }] #{self.subject.strip}"
+    "[#{is_done ? 'x' : ' '}] #{subject.strip}"
   end
 
+  def add_to_list_bottom
+    return unless issue.checklists.select(&:persisted?).map(&:position).include?(self[position_column])
+    self[position_column] = bottom_position_in_list.to_i + 1
+  end
 end

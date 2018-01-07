@@ -26,3 +26,8 @@ ru:
   label_checklist_done: выполнен
   label_checklist_undone: не выполнен
   label_checklist_updated: Пункт чеклиста изменен
+  label_checklist_status: Статус пункта чеклиста
+  label_checklist_status_done: Выполнен
+  label_checklist_status_undone: Не выполнен
+  label_checklist_is_default: По умолчанию
+  field_is_for_tracker: Трекер

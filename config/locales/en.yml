@@ -26,3 +26,9 @@ en:
   label_checklist_done: set to Done
   label_checklist_undone: set to Not done
   label_checklist_updated: Checklist item edited
+  label_checklist_status: Checklist status
+  label_checklist_status_done: Done
+  label_checklist_status_undone: Undone
+  label_checklist_status: Checklist status
+  label_checklist_is_default: Default
+  field_is_for_tracker: Tracker

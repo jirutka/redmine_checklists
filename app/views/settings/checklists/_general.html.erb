@@ -1,8 +1,7 @@
-
-
 <% if Setting.issue_done_ratio == "issue_field" %>
 <p>
-  <label><%= l(:label_checklist_done_ratio) %></label>
-  <%= check_box_tag 'settings[issue_done_ratio]', 1, @settings["issue_done_ratio"] %>
+  <label for="settings_issue_done_ratio"><%= l(:label_checklist_done_ratio) %></label>
+  <%= hidden_field_tag 'settings[issue_done_ratio]', 0, :id => nil %>
+  <%= check_box_tag 'settings[issue_done_ratio]', 1, @settings["issue_done_ratio"].to_i > 0 %>
 </p>
 <% end %>

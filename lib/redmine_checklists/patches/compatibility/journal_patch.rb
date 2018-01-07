@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,12 +40,22 @@ module RedmineChecklists
                   (Setting.notified_events.include?('issue_status_updated') && new_status.present?) ||
                   (Setting.notified_events.include?('issue_priority_updated') && new_value_for('priority_id').present?)
                 )
-              Mailer.issue_edit(self).deliver
+              checklist_email_nootification(self).deliver
             end
           end
 
           def detail_for_attribute(attribute)
-            details.detect {|detail| detail.prop_key == attribute}
+            details.detect { |detail| detail.prop_key == attribute }
+          end
+        end
+
+        def checklist_email_nootification(journal)
+          if Redmine::VERSION.to_s < '2.4'
+            Mailer.issue_edit(journal)
+          else
+            to_users = Redmine::VERSION.to_s <= '3.0' ? journal.notified_users : journal.recipients
+            cc_users = Redmine::VERSION.to_s <= '3.0' ? journal.notified_watchers - to_users : journal.watcher_recipients - to_users
+            Mailer.issue_edit(journal, to_users, cc_users)
           end
         end
       end

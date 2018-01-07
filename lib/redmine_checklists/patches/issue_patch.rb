@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,10 +24,14 @@ module RedmineChecklists
 
     module IssuePatch
       def self.included(base) # :nodoc:
+        base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable # Send unloadable so it will not be unloaded in development
           attr_accessor :old_checklists
           attr_reader :copied_from
+
+          alias_method_chain :copy, :checklist
+          after_save :copy_subtask_checklists
 
           if ActiveRecord::VERSION::MAJOR >= 4
             has_many :checklists,  lambda { order("#{Checklist.table_name}.position") }, :class_name => "Checklist", :dependent => :destroy, :inverse_of => :issue
@@ -46,6 +50,19 @@ module RedmineChecklists
             issue = arg.is_a?(Issue) ? arg : Issue.visible.find(arg)
             issue.checklists.each{ |checklist| Checklist.create(checklist.attributes.except('id','issue_id').merge(:issue => self)) } if issue
           end
+        end
+      end
+
+      module InstanceMethods
+        def copy_subtask_checklists
+          return if !copy? || parent_id.nil? || checklists.any?
+          copy_checklists(@copied_from)
+        end
+
+        def copy_with_checklist(attributes = nil, copy_options = {})
+          copy = copy_without_checklist(attributes, copy_options)
+          copy.copy_checklists(self)
+          copy
         end
       end
     end

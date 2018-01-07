@@ -1,8 +1,8 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2016 Kirill Bezrukov
-# http://www.redminecrm.com/
+# Copyright (C) 2011-2017 RedmineUP
+# http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class ChecklistsController < ApplicationController
   def destroy
     @checklist_item.destroy
     respond_to do |format|
-      format.api {render_api_ok}
+      format.api { render_api_ok }
     end
   end
 
@@ -78,14 +78,14 @@ class ChecklistsController < ApplicationController
     @checklist_item.is_done = params[:is_done] == 'true'
 
     if @checklist_item.save
-      if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings[:issue_done_ratio]
+      if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings["issue_done_ratio"].to_i > 0
         Checklist.recalc_issue_done_ratio(@checklist_item.issue.id)
         @checklist_item.issue.reload
       end
     end
     respond_to do |format|
       format.js
-      format.html {redirect_to :back }
+      format.html { redirect_to :back }
     end
   end
 
