@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -22,10 +22,9 @@ class Checklist < ActiveRecord::Base
   include Redmine::SafeAttributes
   belongs_to :issue
   belongs_to :author, :class_name => "User", :foreign_key => "author_id"
-  has_one :comment, :as => :commented, :dependent => :delete
-  if ActiveRecord::VERSION::MAJOR >= 4
-    attr_protected :id
-  end
+
+  attr_protected :id if ActiveRecord::VERSION::MAJOR <= 4
+
   acts_as_event :datetime => :created_at,
                 :url => Proc.new {|o| {:controller => 'issues', :action => 'show', :id => o.issue_id}},
                 :type => 'issue issue-closed',
@@ -51,7 +50,7 @@ class Checklist < ActiveRecord::Base
                        :order_column => "#{table_name}.id"
   end
 
-  acts_as_list
+  rcrm_acts_as_list
 
   validates_presence_of :subject
   validates_length_of :subject, :maximum => 512
@@ -60,8 +59,8 @@ class Checklist < ActiveRecord::Base
 
   def self.recalc_issue_done_ratio(issue_id)
     issue = Issue.find(issue_id)
-    return false if (Setting.issue_done_ratio != "issue_field") || RedmineChecklists.settings["issue_done_ratio"].to_i < 1 || issue.checklists.empty?
-    done_checklist = issue.checklists.map{|c| c.is_done ? 1 : 0}
+    return false if (Setting.issue_done_ratio != 'issue_field') || !RedmineChecklists.issue_done_ratio? || issue.checklists.empty?
+    done_checklist = issue.checklists.reject(&:is_section).map { |c| c.is_done ? 1 : 0 }
     done_ratio = (done_checklist.count(1) * 10) / done_checklist.count * 10
     issue.update_attribute(:done_ratio, done_ratio)
   end
@@ -71,7 +70,7 @@ class Checklist < ActiveRecord::Base
       (detail.value.is_a?(String) && detail.value.match(/^\[[ |x]\] .+$/).present?)
   end
 
-  safe_attributes 'subject', 'position', 'issue_id', 'is_done'
+  safe_attributes 'subject', 'position', 'issue_id', 'is_done', 'is_section'
 
   def editable_by?(usr = User.current)
     usr && (usr.allowed_to?(:edit_checklists, project) || (author == usr && usr.allowed_to?(:edit_own_checklists, project)))

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ module RedmineChecklists
     class ControllerIssuesHook < Redmine::Hook::ViewListener
       def controller_issues_edit_after_save(context = {})
 
-        if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings["issue_done_ratio"].to_i > 0
+        if (Setting.issue_done_ratio == 'issue_field') && RedmineChecklists.issue_done_ratio?
           Checklist.recalc_issue_done_ratio(context[:issue].id)
         end
       end

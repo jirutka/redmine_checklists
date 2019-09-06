@@ -75,3 +75,25 @@ div#checklist ol {
   display: inline-block;
   padding-left: 0;
 }
+
+#context-menu.checklist-menu { display: none; }
+#context-menu.checklist-menu li.folder ul { overflow: visible; }
+
+.checklist-section {
+  padding-top: 10px;
+  font-weight: bold;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #eee;
+}
+
+.checklist-item.checklist-section > .checklist-checkbox { display: none; }
+
+#checklist_items li.checklist-section {
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.completed-section { color: #999; }
+
+.save-new-by-button { cursor: pointer; }

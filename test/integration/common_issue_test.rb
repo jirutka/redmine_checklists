@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -44,23 +44,19 @@ class CommonIssueTest < RedmineChecklists::IntegrationTest
            :journals,
            :journal_details,
            :queries
-  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/',
-                                         [:checklists])
-
+  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
 
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'
-    @project_1 = Project.find(1)
-    @issue_1 = Issue.find(1)
+    @project_1   = Project.find(1)
+    @issue_1     = Issue.find(1)
     @checklist_1 = Checklist.find(1)
-    @request    = ActionController::TestRequest.new
-   end
+  end
 
-  test "Global search with checklist" do
-    # log_user('admin', 'admin')
-    @request.session[:user_id] = 1
-    get "/search?q=First"
+  def test_global_search_with_checklist
+    log_user('admin', 'admin')
+    compatible_request :get, '/search?q=First'
     assert_response :success
   end
 end

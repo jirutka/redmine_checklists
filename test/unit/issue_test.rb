@@ -20,8 +20,9 @@
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
 require File.expand_path('../../test_helper', __FILE__)
+include RedmineChecklists::TestHelper
 
-class ChecklistTest < ActiveSupport::TestCase
+class IssueTest < ActiveSupport::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -50,40 +51,35 @@ class ChecklistTest < ActiveSupport::TestCase
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'
-    @project_1 = Project.find(1)
-    @issue_1 = Issue.create(:project_id => 1, :tracker_id => 1, :author_id => 1,
-                            :status_id => 1, :priority => IssuePriority.first,
-                            :subject => 'Invoice Issue 1')
-    @checklist_1 = Checklist.create(:subject => 'TEST1', :position => 1, :issue => @issue_1)
+    @project = Project.find(1)
+    @issue = Issue.create(:project => @project, :tracker_id => 1, :author_id => 1,
+                          :status_id => 1, :priority => IssuePriority.first,
+                          :subject => 'TestIssue')
+    @checklist_1 = Checklist.create(:subject => 'TEST1', :position => 1, :issue => @issue)
+    @checklist_2 = Checklist.create(:subject => 'TEST2', :position => 2, :issue => @issue, :is_done => true)
+    @issue.reload
   end
 
-  test "should save checklist" do
-    assert @checklist_1.save, "Checklist save error"
+  def test_issue_shouldnt_close_when_it_has_unfinished_checklists
+    with_checklists_settings('block_issue_closing' => '1') do
+      @issue.status_id = 5
+      assert !@issue.valid?
+    end
   end
 
-  test "should not save checklist without subject" do
-    @checklist_1.subject = nil
-    assert !@checklist_1.save, "Checklist save with nil subject"
+  def test_validation_should_be_ignored_if_setting_disabled
+    with_checklists_settings('block_issue_closing' => '0') do
+      @issue.status_id = 5
+      assert @issue.valid?
+    end
   end
 
-  test "should not save checklist without position" do
-    @checklist_1.position = nil
-    assert !@checklist_1.save, "Checklist save with nil position"
+  def test_issue_should_close_when_all_checklists_finished
+    with_checklists_settings('block_issue_closing' => '1') do
+      @checklist_1.update_attributes(:is_done => true)
+      assert @issue.valid?
+    end
+  ensure
+    @checklist_1.update_attributes(:is_done => false)
   end
-
-  test "should not save checklist with non integer position" do
-    @checklist_1.position = "string"
-    assert !@checklist_1.save, "Checklist save with non ingeger position"
-  end
-
-  test "should return project info" do
-    assert_equal @project_1, @checklist_1.project, "Helper project broken"
-  end
-
-  test "should return info about checklist" do
-    assert_equal "[ ] #{@checklist_1.subject}", @checklist_1.info, "Helper info broken"
-    @checklist_1.is_done = 1
-    assert_equal "[x] #{@checklist_1.subject}", @checklist_1.info, "Helper info broken"
-  end
-
 end

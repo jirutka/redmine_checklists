@@ -15,10 +15,12 @@ ru:
   field_template_items: Элементы шаблона
   label_checklist_template: Шаблон чеклистов
   label_add_checklists_from_template: Добавить из шаблона
+  label_checklists_from_template: Из шаблона
   label_select_template: "-- Выберите шаблон --"
   label_checklist_category_not_specified: "-- Без категории --"
   label_checklists_description: 'Для ввода нескольких значений вводите по одному на строку'
   label_checklist_item: Пункт чеклиста
+  label_checklist_section: Раздел чеклиста
   label_checklist_deleted: удалён
   label_checklist_changed_from: изменён с
   label_checklist_changed_to: на
@@ -31,3 +33,6 @@ ru:
   label_checklist_status_undone: Не выполнен
   label_checklist_is_default: По умолчанию
   field_is_for_tracker: Трекер
+  label_checklist_show_closed: Показать закрытые
+  label_checklist_hide_closed: Скрыть закрытые
+  label_checklist_new_section: Новая секция

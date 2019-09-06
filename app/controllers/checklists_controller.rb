@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 class ChecklistsController < ApplicationController
   unloadable
 
-  before_filter :find_checklist_item, :except => [:index, :create]
-  before_filter :find_issue_by_id, :only => [:index, :create]
-  before_filter :authorize, :except => [:done]
+  before_action :find_checklist_item, :except => [:index, :create]
+  before_action :find_issue_by_id, :only => [:index, :create]
+  before_action :authorize, :except => [:done]
   helper :issues
 
   accept_api_auth :index, :update, :destroy, :create, :show
@@ -48,7 +48,8 @@ class ChecklistsController < ApplicationController
   end
 
   def create
-    @checklist_item = Checklist.new(params[:checklist])
+    @checklist_item = Checklist.new
+    @checklist_item.safe_attributes = params[:checklist]
     @checklist_item.issue = @issue
     respond_to do |format|
       format.api {
@@ -62,9 +63,10 @@ class ChecklistsController < ApplicationController
   end
 
   def update
+    @checklist_item.safe_attributes = params[:checklist]
     respond_to do |format|
       format.api {
-        if @checklist_item.update_attributes(params[:checklist])
+        if @checklist_item.save
           render_api_ok
         else
           render_validation_errors(@checklist_item)
@@ -78,7 +80,7 @@ class ChecklistsController < ApplicationController
     @checklist_item.is_done = params[:is_done] == 'true'
 
     if @checklist_item.save
-      if (Setting.issue_done_ratio == "issue_field") && RedmineChecklists.settings["issue_done_ratio"].to_i > 0
+      if (Setting.issue_done_ratio == 'issue_field') && RedmineChecklists.issue_done_ratio?
         Checklist.recalc_issue_done_ratio(@checklist_item.issue.id)
         @checklist_item.issue.reload
       end

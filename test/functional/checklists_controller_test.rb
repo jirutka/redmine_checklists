@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -44,8 +44,7 @@ class ChecklistsControllerTest < ActionController::TestCase
            :journals,
            :journal_details,
            :queries
-  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/',
-                                         [:checklists])
+  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
 
   def setup
     RedmineChecklists::TestCase.prepare
@@ -61,7 +60,7 @@ class ChecklistsControllerTest < ActionController::TestCase
     # log_user('admin', 'admin')
     @request.session[:user_id] = 1
 
-    xhr :put, :done, :is_done => 'true', :id => '1'
+    compatible_xhr_request :put, :done, :is_done => 'true', :id => '1'
     assert_response :success, 'Post done not working'
     assert_equal true, Checklist.find(1).is_done, 'Post done not working'
   end
@@ -70,7 +69,7 @@ class ChecklistsControllerTest < ActionController::TestCase
     # log_user('admin', 'admin')
     @request.session[:user_id] = 5
 
-    xhr :put, :done, :is_done => true, :id => "1"
+    compatible_xhr_request :put, :done, :is_done => true, :id => "1"
     assert_response 403, "Post done accessible for all"
   end
 
@@ -78,7 +77,7 @@ class ChecklistsControllerTest < ActionController::TestCase
     # log_user('admin', 'admin')
     @request.session[:user_id] = 1
     @controller = IssuesController.new
-    get :show, :id => @issue_1.id
+    compatible_request :get, :show, :id => @issue_1.id
     assert_select 'ul#checklist_items li#checklist_item_1', @checklist_1.subject, "Issue won't view for admin"
   end
 
@@ -86,7 +85,7 @@ class ChecklistsControllerTest < ActionController::TestCase
     # log_user('anonymous', '')
     @request.session[:user_id] = 5
     @controller = IssuesController.new
-    get :show, :id => @issue_1.id
+    compatible_request :get, :show, :id => @issue_1.id
     assert_select 'ul#checklist_items', false, "Issue view for anonymous"
   end
 end

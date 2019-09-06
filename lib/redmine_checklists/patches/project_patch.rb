@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -26,7 +26,8 @@ module RedmineChecklists
         base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable # Send unloadable so it will not be unloaded in development
-          alias_method_chain :copy_issues, :checklist
+          alias_method :copy_issues_without_checklist, :copy_issues
+          alias_method :copy_issues, :copy_issues_with_checklist
         end
       end
 

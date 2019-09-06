@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -19,27 +19,24 @@
 
 class JournalChecklistHistory
   def self.can_fixup?(journal_details)
-    unless journal_details.journal
-      return false
-    end
+    return false if journal_details.journal.nil?
+
     issue = journal_details.journal.journalized
-    unless issue.is_a?(Issue)
-      return false
-    end
+    return false unless issue.is_a?(Issue)
+
     prev_journal_scope = issue.journals.order('id DESC')
     prev_journal_scope = prev_journal_scope.where('id <> ?', journal_details.journal_id) if journal_details.journal_id
     prev_journal = prev_journal_scope.first
-    unless prev_journal
-      return false
-    end
+    return false unless prev_journal
 
+    return false if prev_journal.user_id != journal_details.journal.user_id
     return false if Time.zone.now > prev_journal.created_on + 1.minute
 
-    prev_journal.details.all?{ |x| x.prop_key == 'checklist'} &&
-      journal_details.journal.details.all?{ |x| x.prop_key == 'checklist'} &&
+    prev_journal.details.all? { |x| x.prop_key == 'checklist' } &&
+      journal_details.journal.details.all? { |x| x.prop_key == 'checklist' } &&
       journal_details.journal.notes.blank? &&
       prev_journal.notes.blank? &&
-      prev_journal.details.select{ |x| x.prop_key == 'checklist' }.size == 1
+      prev_journal.details.select { |x| x.prop_key == 'checklist' }.size == 1
   end
 
   def self.fixup(journal_details)

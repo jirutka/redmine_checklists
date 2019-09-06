@@ -17,21 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-require_dependency 'query'
-
 module RedmineChecklists
   module Patches
-    module IssueQueryPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-      end
+    module ApplicationHelperPatch
+      def self.included(base) # :nodoc:
+        base.class_eval do
+          unloadable # Send unloadable so it will not be unloaded in development
 
-      module InstanceMethods
+          def stocked_reorder_link(object, name = nil, url = {}, method = :post)
+            Redmine::VERSION.to_s > '3.3' ? reorder_handle(object, :param => name) : reorder_links(name, url, method)
+          end
+        end
       end
     end
   end
 end
 
-unless IssueQuery.included_modules.include?(RedmineChecklists::Patches::IssueQueryPatch)
-  IssueQuery.send(:include, RedmineChecklists::Patches::IssueQueryPatch)
+unless ApplicationHelper.included_modules.include?(RedmineChecklists::Patches::ApplicationHelperPatch)
+  ApplicationHelper.send(:include, RedmineChecklists::Patches::ApplicationHelperPatch)
 end

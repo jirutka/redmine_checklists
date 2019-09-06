@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-class AddFieldsToChecklistTemplate < ActiveRecord::Migration
+class AddFieldsToChecklistTemplate < Rails.version < '5.1' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
   def self.up
     add_column :checklist_templates, :is_default, :boolean, :default => false
     add_column :checklist_templates, :tracker_id, :integer

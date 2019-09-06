@@ -25,5 +25,12 @@ de:
   label_checklist_changed_to: zu
   label_checklist_added: hinzugefügt
   label_checklist_done: als Erledigt markiert
-  label_checklist_undone: als Nicht Erledigt markiert
+  label_checklist_undone: als Nicht erledigt markiert
   label_checklist_updated: Checklisten-Eintrag editiert
+  label_checklist_status: Checklisten-Status
+  label_checklist_status_done: Erledigt
+  label_checklist_status_undone: Nicht erledigt
+  label_checklist_is_default: Standard
+  field_is_for_tracker: Tracker
+  label_checklists_must_be_completed: "Alle Checklisten-Einträge eines Tickets müssen vor dem Schließen erledigt werden."
+  label_checklist_block_issue_closing: "Schließen des Tickets blockieren"

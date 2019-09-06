@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 require 'redmine'
 require 'redmine_checklists/redmine_checklists'
 
-CHECKLISTS_VERSION_NUMBER = '3.1.10'
+CHECKLISTS_VERSION_NUMBER = '3.1.16'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
@@ -40,9 +40,9 @@ Redmine::Plugin.register :redmine_checklists do
 
   Redmine::AccessControl.map do |map|
     map.project_module :issue_tracking do |map|
-      map.permission :view_checklists,            {:checklists => [:show, :index]}
-      map.permission :done_checklists,            {:checklists => :done}
-      map.permission :edit_checklists,            {:checklists => [:done, :create, :destroy, :update]}
+      map.permission :view_checklists, { :checklists => [:show, :index] }
+      map.permission :done_checklists, { :checklists => :done }
+      map.permission :edit_checklists, { :checklists => [:done, :create, :destroy, :update] }
     end
   end
 

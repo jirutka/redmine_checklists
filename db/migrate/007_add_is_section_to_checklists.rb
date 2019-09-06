@@ -17,21 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-require_dependency 'query'
-
-module RedmineChecklists
-  module Patches
-    module IssueQueryPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-      end
-
-      module InstanceMethods
-      end
-    end
+class AddIsSectionToChecklists < (Rails.version < '5.1') ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+  def change
+    add_column :checklists, :is_section, :boolean, default: false
   end
-end
-
-unless IssueQuery.included_modules.include?(RedmineChecklists::Patches::IssueQueryPatch)
-  IssueQuery.send(:include, RedmineChecklists::Patches::IssueQueryPatch)
 end

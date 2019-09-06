@@ -1,8 +1,38 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2017 RedmineUP
+Copyright (C) 2011-2019 RedmineUP
 http://www.redmineup.com/
+
+== 2019-04-29 v3.1.16
+
+* Checklists sections
+
+== 2019-04-15 v3.1.15
+
+* Redmine 4.0.3 support
+* Added Hide link for closed items
+
+== 2018-12-20 v3.1.14
+
+* Hotfix for Redmine 4
+
+== 2018-12-18 v3.1.13
+
+* Redmine 4 saving issue fixes
+
+== 2018-11-26 v3.1.12
+
+* German translation update from Tobias Fischer
+* Fixed diferent authors changes bug
+* Fixed sortable animation bug
+
+== 2018-03-23 v3.1.11
+
+* Redmine 4 support
+* Setting for block issues with undone checklists
+* Fixed bug with default template
+* Fixed email notification bug
 
 == 2017-10-12 v3.1.10
 
@@ -29,10 +59,10 @@ http://www.redmineup.com/
 
 * Redmine 3.4 support
 * New checklists filters for issues table
-* Save log by default 
+* Save log by default
 * Chinese translation update
 * Polish translation update
-* Fixed bug with template editing 
+* Fixed bug with template editing
 
 == 2016-08-15 v3.1.5
 

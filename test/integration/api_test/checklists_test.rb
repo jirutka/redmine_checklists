@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2017 RedmineUP
+# Copyright (C) 2011-2019 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-require File.dirname(__FILE__) + '/../../test_helper'
+require File.expand_path('../../../test_helper', __FILE__)
 
 class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
   fixtures :projects,
@@ -46,27 +46,25 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
            :journal_details,
            :queries
 
-    RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/',
-                            [:checklists])
+  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
 
   def setup
     Setting.rest_api_enabled = '1'
   end
 
   def test_get_checklists_xml
-    get '/issues/1/checklists.xml', {}, credentials('admin')
+    compatible_api_request :get, '/issues/1/checklists.xml', {}, credentials('admin')
 
     assert_select 'checklists[type=array]' do
       assert_select 'checklist' do
-        assert_select 'id', :text => "1"
-        assert_select 'subject', :text => "First todo"
+        assert_select 'id', :text => '1'
+        assert_select 'subject', :text => 'First todo'
       end
     end
-
   end
 
   def test_get_checklists_1_xml
-    get '/checklists/1.xml', {}, credentials('admin')
+    compatible_api_request :get, '/checklists/1.xml', {}, credentials('admin')
 
     assert_select 'checklist' do
       assert_select 'id', :text => '1'
@@ -75,11 +73,11 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
   end
 
   def test_post_checklists_xml
-    parameters = {:checklist => {:issue_id => 1,
-                                 :subject => 'api_test_001',
-                                 :is_done => true}}
+    parameters = { :checklist => { :issue_id => 1,
+                                   :subject => 'api_test_001',
+                                   :is_done => true } }
     assert_difference('Checklist.count') do
-      post '/issues/1/checklists.xml', parameters, credentials('admin')
+      compatible_api_request :post, '/issues/1/checklists.xml', parameters, credentials('admin')
     end
 
     checklist = Checklist.order('id DESC').first
@@ -91,25 +89,23 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
   end
 
   def test_put_checklists_1_xml
-    parameters = {:checklist => {:subject => 'Item_UPDATED'}}
+    parameters = { :checklist => { :subject => 'Item_UPDATED' } }
 
     assert_no_difference('Checklist.count') do
-      put '/checklists/1.xml', parameters, credentials('admin')
+      compatible_api_request :put, '/checklists/1.xml', parameters, credentials('admin')
     end
 
     checklist = Checklist.find(1)
     assert_equal parameters[:checklist][:subject], checklist.subject
-
   end
 
   def test_delete_1_xml
     assert_difference 'Checklist.count', -1 do
-      delete '/checklists/1.xml', {}, credentials('admin')
+      compatible_api_request :delete, '/checklists/1.xml', {}, credentials('admin')
     end
 
-    assert_response :ok
+    assert_response Redmine::VERSION.to_s < '4.0.4' && Redmine::VERSION::BRANCH == 'stable' ? :ok : :no_content
     assert_equal '', @response.body
     assert_nil Checklist.find_by_id(1)
   end
-
 end
