@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ module RedmineChecklists
   end
 end
 
-unless IssueQuery.included_modules.include?(RedmineChecklists::Patches::IssueQueryPatch)
+if (ActiveRecord::Base.connection.tables.include?('queries') rescue false) &&
+   IssueQuery.included_modules.exclude?(RedmineChecklists::Patches::IssueQueryPatch)
   IssueQuery.send(:include, RedmineChecklists::Patches::IssueQueryPatch)
 end

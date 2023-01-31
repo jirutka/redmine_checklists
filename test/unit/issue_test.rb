@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -76,10 +76,10 @@ class IssueTest < ActiveSupport::TestCase
 
   def test_issue_should_close_when_all_checklists_finished
     with_checklists_settings('block_issue_closing' => '1') do
-      @checklist_1.update_attributes(:is_done => true)
+      @checklist_1.update(is_done: true)
       assert @issue.valid?
     end
   ensure
-    @checklist_1.update_attributes(:is_done => false)
+    @checklist_1.update(is_done: false)
   end
 end

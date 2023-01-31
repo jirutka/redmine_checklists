@@ -1,5 +1,9 @@
 # encoding: utf-8
 ru:
+  activerecord:
+    attributes:
+      checklists:
+        subject: Заголовок чеклиста
   label_checklist_plural: Чеклист
   field_checklist: Чеклист
   label_checklist_save_log: Сохранять изменения в истории
@@ -36,3 +40,7 @@ ru:
   label_checklist_show_closed: Показать закрытые
   label_checklist_hide_closed: Скрыть закрытые
   label_checklist_new_section: Новая секция
+  label_checklist_block_issue_closing: Запретить закрытие заявки
+  label_checklists: Чеклист
+  label_checklists_must_be_completed: Чтобы заявка закрылась, должны быть выполнены все пункты чеклиста
+  field_checklists: Чеклист

@@ -1,5 +1,5 @@
-#Portuguese Brazilian strings go here for Rails i18n
-pt-BR:
+#Portuguese Portugal strings go here for Rails i18n
+pt:
   activerecord:
     attributes:
       checklists:

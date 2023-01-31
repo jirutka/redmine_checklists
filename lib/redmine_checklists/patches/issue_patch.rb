@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ module RedmineChecklists
         end
 
         def copy_subtask_checklists
-          return if !copy? || parent_id.nil? || checklists.any?
+          return if !copy? || parent_id.nil? || checklists.reload.any?
           copy_checklists(@copied_from)
         end
 

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ class JournalChecklistHistory
     if new(checklist_details.old_value, journal_details.value).empty_diff?
       prev_journal.destroy
     else
-      checklist_details.update_attribute(:value, journal_details.value)
+      checklist_details.update(value: journal_details.value)
       journal_details.journal.destroy unless journal_details.journal.new_record? && journal_details.journal.details.any?{ |x| x.prop_key != 'checklist'}
     end
   end

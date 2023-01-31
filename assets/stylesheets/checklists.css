@@ -1,3 +1,7 @@
+#checklist_form_items input[type="checkbox"], 
+#checklist_items input[type="checkbox"] {
+  height: initial;
+}
 
 div#checklist ul {
 	list-style: none;
@@ -9,6 +13,8 @@ div#checklist li {
   padding-bottom: 10px;
   margin-left: 10px;
 }
+
+.checklist-checkbox {height: inherit}
 
 #checklist li:hover a.delete {opacity: 1;}
 
@@ -76,9 +82,6 @@ div#checklist ol {
   padding-left: 0;
 }
 
-#context-menu.checklist-menu { display: none; }
-#context-menu.checklist-menu li.folder ul { overflow: visible; }
-
 .checklist-section {
   padding-top: 10px;
   font-weight: bold;
@@ -97,3 +100,45 @@ div#checklist ol {
 .completed-section { color: #999; }
 
 .save-new-by-button { cursor: pointer; }
+
+table.list td.checklist_relations { text-align: left }
+
+/* ========================================================================= */
+/*                        Checklist context menu                             */
+/* ========================================================================= */
+
+#checklist-menu ul, #checklist-menu li, #checklist-menu a {
+  display:block;
+  margin:0;
+  padding:0;
+  border:0;
+}
+
+#checklist-menu {
+  display: none;
+  position: absolute;
+  font-size: 0.9em;
+}
+
+#checklist-menu, #checklist-menu ul {
+  width: 150px;
+  border: 1px solid #ccc;
+  background: white;
+  list-style: none;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+#checklist-menu li {
+  position: relative;
+  padding: 1px;
+  border: 1px solid white;
+}
+
+#checklist-menu a {
+  text-decoration: none !important;
+  padding: 2px 0px 2px 20px;
+}
+
+#checklist-menu a:hover { color:#2A5685; }
+#checklist-menu li:hover { border:1px solid #628db6; background-color:#eef5fd; border-radius:3px; }

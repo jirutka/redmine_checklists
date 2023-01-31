@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -35,9 +35,14 @@ module RedmineChecklists
       module InstanceMethods
         def build_new_issue_from_params_with_checklist
           if params[:id].blank?
-            if params[:copy_from].blank?
-            else
-              fill_checklist_attributes
+            begin
+              if params[:copy_from].blank?
+              else
+                fill_checklist_attributes
+              end
+            rescue ActiveRecord::RecordNotFound
+              render_404
+              return
             end
           end
           build_new_issue_from_params_without_checklist
@@ -57,13 +62,9 @@ module RedmineChecklists
 
         def fill_checklist_attributes
           return unless params[:issue].blank?
-          begin
-            @copy_from = Issue.visible.find(params[:copy_from])
-            add_checklists_to_params(@copy_from.checklists)
-          rescue ActiveRecord::RecordNotFound
-            render_404
-            return
-          end
+
+          @copy_from = Issue.visible.find(params[:copy_from])
+          add_checklists_to_params(@copy_from.checklists)
         end
 
         def add_checklists_to_params(checklists)

@@ -34,3 +34,6 @@ de:
   field_is_for_tracker: Tracker
   label_checklists_must_be_completed: "Alle Checklisten-Einträge eines Tickets müssen vor dem Schließen erledigt werden."
   label_checklist_block_issue_closing: "Schließen des Tickets blockieren"
+  label_checklist_show_closed: Zeige alle
+  label_checklist_hide_closed: Verberge geschlossene
+  label_checklist_new_section: Neue Unterteilung

@@ -1,7 +1,7 @@
-<li id="checklist_item_<%= checklist_item.id %>" class="<%= done_item_css_class(checklist_item) %> <%= section_item_css_class(checklist_item) %>" >
+<li id="checklist_item_<%= checklist_item.id %>" class="<%= 'is-done-checklist-item' if checklist_item.is_done %> <%= 'checklist-section' if checklist_item.is_section %>">
   <% unless checklist_item.is_section %>
     <%= check_box_tag 'checklist_item', '', checklist_item.is_done,
-                      disabled: !can_edit_checklist_item?(checklist_item),
+                      disabled: !User.current.allowed_to?(:done_checklists, checklist_item.issue.project) && !User.current.allowed_to?(:edit_checklists, checklist_item.issue.project),
                       data_url: url_for({ controller: 'checklists', action: 'done', id: checklist_item.id }),
                       class: 'checklist-checkbox',
                       id: "checklist-checkbox-#{checklist_item.id}"

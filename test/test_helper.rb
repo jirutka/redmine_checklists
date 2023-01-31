@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -44,11 +44,11 @@ module RedmineChecklists
     end
 
     def with_checklists_settings(options, &block)
-      Setting.plugin_redmine_checklists.stubs(:[]).returns(nil)
-      options.each { |k, v| Setting.plugin_redmine_checklists.stubs(:[]).with(k).returns(v) }
+      original_settings = Setting.plugin_redmine_checklists
+      Setting.plugin_redmine_checklists = original_settings.merge(Hash[options.map {|k,v| [k, v]}])
       yield
     ensure
-      options.each { |_k, _v| Setting.plugin_redmine_checklists.unstub(:[]) }
+      Setting.plugin_redmine_checklists = original_settings
     end
   end
 end
@@ -71,6 +71,11 @@ class RedmineChecklists::TestCase
   end
 
   def self.prepare
+    Role.find([1,2]).each do |r| # For anonymous
+      r.permissions << :view_checklists
+      r.save
+    end
+
     Role.find(1, 2, 3, 4).each do |r|
       r.permissions << :edit_checklists
       r.save

@@ -15,5 +15,6 @@
 </div>
   <%= javascript_tag do %>
     new Redmine.ChecklistToggle('<%= l("label_checklist_show_closed") %>', '<%= l("label_checklist_hide_closed") %>');
+    $("#checklist_items").checklist();
   <% end %>
 <% end %>

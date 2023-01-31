@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -84,12 +84,12 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
     assert_equal parameters[:checklist][:subject], checklist.subject
 
     assert_response :created
-    assert_equal 'application/xml', @response.content_type
+    assert_match 'application/xml', @response.content_type
     assert_select 'checklist id', :text => checklist.id.to_s
   end
 
   def test_put_checklists_1_xml
-    parameters = { :checklist => { :subject => 'Item_UPDATED' } }
+    parameters = { :checklist => { subject: 'Item_UPDATED', is_done: '1' } }
 
     assert_no_difference('Checklist.count') do
       compatible_api_request :put, '/checklists/1.xml', parameters, credentials('admin')
@@ -99,12 +99,35 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
     assert_equal parameters[:checklist][:subject], checklist.subject
   end
 
+  def test_recalculate_ratio_after_multirequests
+    issue = Issue.find(1)
+    with_checklists_settings('issue_done_ratio' => '1') do
+      assert_equal 0, issue.reload.done_ratio
+
+      parameters_array = [
+        [1, { :checklist => { subject: 'Item 1', is_done: '1' } }],
+        [2, { :checklist => { subject: 'Item 2', is_done: '1' } }],
+        [1, { :checklist => { subject: 'Item 1', is_done: '0' } }],
+        [2, { :checklist => { subject: 'Item 2', is_done: '1' } }]
+      ]
+
+      assert_no_difference('Checklist.count') do
+        parameters_array.each do |params|
+          compatible_api_request :put, "/checklists/#{params[0]}.xml", params[1], credentials('admin')
+          assert ['200', '204'].include?(response.code)
+        end
+      end
+
+      assert_equal 50, issue.reload.done_ratio
+    end
+  end
+
   def test_delete_1_xml
     assert_difference 'Checklist.count', -1 do
       compatible_api_request :delete, '/checklists/1.xml', {}, credentials('admin')
     end
 
-    assert_response Redmine::VERSION.to_s < '4.0.4' && Redmine::VERSION::BRANCH == 'stable' ? :ok : :no_content
+    assert ['200', '204'].include?(response.code)
     assert_equal '', @response.body
     assert_nil Checklist.find_by_id(1)
   end

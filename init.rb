@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 require 'redmine'
 require 'redmine_checklists/redmine_checklists'
 
-CHECKLISTS_VERSION_NUMBER = '3.1.16'.freeze
+CHECKLISTS_VERSION_NUMBER = '3.1.19'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
@@ -31,7 +31,7 @@ Redmine::Plugin.register :redmine_checklists do
   url 'https://www.redmineup.com/pages/plugins/checklists'
   author_url 'mailto:support@redmineup.com'
 
-  requires_redmine :version_or_higher => '2.3'
+  requires_redmine :version_or_higher => '3.0'
 
   settings :default => {
     :save_log => true,

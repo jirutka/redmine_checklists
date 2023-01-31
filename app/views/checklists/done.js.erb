@@ -3,7 +3,7 @@ $('#checklist_form .checklist-item#<%= @checklist_item.id %> input[type=checkbox
 $('.issue .attributes table.progress').parent().html('<%= j(progress_bar(@checklist_item.issue.done_ratio, :width => '80px', :legend => "#{@checklist_item.issue.done_ratio}%")) %>');
 $('#issue_done_ratio').val('<%= @checklist_item.issue.done_ratio %>');
 
-var checkedCheckboxes = $('.checklist-checkbox:checkbox:checked');
+var checkedCheckboxes = $('#checklist_items .checklist-checkbox:checkbox:checked');
 
 if(localStorage.getItem("hide_closed_checklists") === '0' && checkedCheckboxes.length > 0){
   $("#checklist_item_<%= @checklist_item.id %>").fadeOut(1000).hide(15);

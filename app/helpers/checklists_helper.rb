@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -53,20 +53,6 @@ module ChecklistsHelper
     else
       ""
     end
-  end
-
-  def can_edit_checklist_item?(checklist_item)
-    project = checklist_item.issue.project
-    User.current.allowed_to?(:done_checklists, project) ||
-      User.current.allowed_to?(:edit_checklists, project)
-  end
-
-  def done_item_css_class(checklist_item)
-    checklist_item.is_done ? 'is-done-checklist-item' : ''
-  end
-
-  def section_item_css_class(checklist_item)
-    ''
   end
 
 end

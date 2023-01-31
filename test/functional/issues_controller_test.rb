@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -53,6 +53,7 @@ class IssuesControllerTest < ActionController::TestCase
 
   def setup
     @request.session[:user_id] = 1
+    RedmineChecklists::TestCase.prepare
   end
 
   def test_new_issue_without_project
@@ -96,7 +97,7 @@ class IssuesControllerTest < ActionController::TestCase
       compatible_xhr_request :put, :new, :issue => parameters, :project_id => issue.project
     end
     assert_response :success
-    assert_equal 'text/javascript', response.content_type
+    assert_match 'text/javascript', response.content_type
     assert_match 'FirstChecklist', response.body
   end
 
@@ -197,5 +198,29 @@ class IssuesControllerTest < ActionController::TestCase
     assert_equal 1, issue.checklists.count
   ensure
     Setting.rest_api_enabled = old_value
+  end
+
+  def test_history_displaying_for_checklist
+    @request.session[:user_id] = 1
+    Setting[:plugin_redmine_checklists] = { save_log: 1, issue_done_ratio: 0 }
+
+    issue = Issue.find(1)
+    journal = issue.journals.create!(user_id: 1)
+    journal.details.create!(:property =>  'attr',
+                            :prop_key =>  'checklist',
+                            :old_value => '[ ] TEST',
+                            :value =>     '[x] TEST')
+
+    # With permissions
+    @request.session[:user_id] = 1
+    compatible_request :get, :show, id: issue.id
+    assert_response :success
+    assert_include 'changed from [ ] TEST to [x] TEST', response.body
+
+    # Without permissions
+    @request.session[:user_id] = 5
+    compatible_request :get, :show, id: issue.id
+    assert_response :success
+    assert_not_include 'changed from [ ] TEST to [x] TEST', response.body
   end
 end

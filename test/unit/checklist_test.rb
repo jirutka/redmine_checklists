@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2019 RedmineUP
+# Copyright (C) 2011-2021 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -86,4 +86,53 @@ class ChecklistTest < ActiveSupport::TestCase
     assert_equal "[x] #{@checklist_1.subject}", @checklist_1.info, "Helper info broken"
   end
 
+  def test_should_correct_recalculate_rate
+    issues = [
+      [Issue.create(project_id: 1, tracker_id: 1, author_id: 1, status_id: 1, priority: IssuePriority.first, subject: "TI #1", done_ratio: 0,
+                    checklists_attributes: {
+                      '0' => { subject: 'item 1', is_done: false },
+                      '1' => { subject: 'item 2', is_done: false },
+                      '2' => { subject: 'item 3', is_done: true },
+                    }),
+       30],
+      [Issue.create(project_id: 1, tracker_id: 1, author_id: 1, status_id: 1, priority: IssuePriority.first, subject: "TI #2", done_ratio: 0,
+                    checklists_attributes: {
+                      '0' => { subject: 'item 1', is_done: false },
+                      '1' => { subject: 'item 2', is_done: true },
+                      '2' => { subject: 'item 3', is_done: true },
+                    }),
+       60],
+       [Issue.create(project_id: 1, tracker_id: 1, author_id: 1, status_id: 1, priority: IssuePriority.first, subject: "TI #3", done_ratio: 0,
+                     checklists_attributes: {
+                       '0' => { subject: 'item 1', is_done: true },
+                       '1' => { subject: 'item 2', is_done: true },
+                       '2' => { subject: 'item 3', is_done: true },
+                     }),
+       100],
+       [Issue.create(project_id: 1, tracker_id: 1, author_id: 1, status_id: 1, priority: IssuePriority.first, subject: "TI #4", done_ratio: 0,
+                     checklists_attributes: {
+                       '0' => { subject: 'item 1', is_done: false },
+                       '1' => { subject: 'item 2', is_done: false },
+                       '2' => { subject: 'section 1', is_done: true, is_section: true },
+                       '3' => { subject: 'item 3', is_done: true },
+                     }),
+       30],
+       [Issue.create(project_id: 1, tracker_id: 1, author_id: 1, status_id: 1, priority: IssuePriority.first, subject: "TI #5", done_ratio: 0,
+        checklists_attributes: {
+          '0' => { subject: 'section 1', is_done: true, is_section: true }
+        }),
+       0]
+    ]
+
+    with_checklists_settings('issue_done_ratio' => '1') do
+      issues.each do |issue, after_ratio|
+        assert_equal 0, issue.done_ratio
+        Checklist.recalc_issue_done_ratio(issue.id)
+        issue.reload
+        assert_equal after_ratio, issue.done_ratio
+      end
+    end
+  ensure
+    issues.each { |issue, ratio| issue.destroy }
+  end
 end

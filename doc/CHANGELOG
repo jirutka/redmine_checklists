@@ -1,8 +1,37 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2019 RedmineUP
+Copyright (C) 2011-2021 RedmineUP
 http://www.redmineup.com/
+
+== 2021-05-21 v3.1.19
+
+* Added Redmine 4.2 compatibility
+* Fixed empty project errors
+* Fixed notification on journal fixup
+* Fixed checklist positions bug
+
+== 2020-08-17 v3.1.18
+
+* Added italian locale
+* Updated zh-tw locale
+* Fixed size() method error
+* Fixed initial install error
+* Fixed checklist ration recalculate
+* Fixed display checklist element with Markdown syntax
+* Fixed done ratio recalculate on checklist API update
+* Fixed API call journalizing
+
+== 2020-01-31 v3.1.17
+
+* Redmine 4.1 compatibility fixes
+* Fixed view permission bug
+* Fixed template permissions bug
+* Fixed context menu conflicts
+* Fixed Agile support
+* Fixed checklist copy bug
+* Fixed locale bug
+* Fixed project copy bug
 
 == 2019-04-29 v3.1.16
 
