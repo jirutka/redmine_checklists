@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,10 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'redmine'
-require 'redmine_checklists/redmine_checklists'
-
-CHECKLISTS_VERSION_NUMBER = '3.1.19'.freeze
+CHECKLISTS_VERSION_NUMBER = '3.1.22'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
@@ -45,8 +42,9 @@ Redmine::Plugin.register :redmine_checklists do
       map.permission :edit_checklists, { :checklists => [:done, :create, :destroy, :update] }
     end
   end
-
-  Redmine::Search.map do |search|
-    # search.register :checklists
-  end
 end
+
+if Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoloader == :zeitwerk
+  Rails.autoloaders.each { |loader| loader.ignore(File.dirname(__FILE__) + '/lib') }
+end
+require File.dirname(__FILE__) + '/lib/redmine_checklists'

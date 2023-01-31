@@ -4,6 +4,7 @@ api.checklist do
   api.subject    @checklist_item.subject
   api.is_done    @checklist_item.is_done
   api.position   @checklist_item.position
+  api.is_section @checklist_item.is_section
 
   api.created_at @checklist_item.created_at
   api.updated_at @checklist_item.updated_at

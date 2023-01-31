@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@ module RedmineChecklists
           unloadable # Send unloadable so it will not be unloaded in development
           attr_accessor :old_checklists
           attr_accessor :removed_checklist_ids
+          attr_accessor :checklists_from_params
           attr_reader :copied_from
 
           alias_method :copy_without_checklist, :copy
@@ -52,15 +53,16 @@ module RedmineChecklists
       module InstanceMethods
         def copy_checklists(arg)
           issue = arg.is_a?(Issue) ? arg : Issue.visible.find(arg)
-          if issue
-            issue.checklists.each do |checklist|
-              Checklist.create(checklist.attributes.except('id', 'issue_id').merge(issue: self))
-            end
+          return unless issue
+
+          issue.checklists.each do |checklist|
+            Checklist.create(checklist.attributes.except('id', 'issue_id').merge(issue: self))
           end
         end
 
         def copy_subtask_checklists
-          return if !copy? || parent_id.nil? || checklists.reload.any?
+          return if checklists_from_params || !copy? || parent_id.nil? || checklists.reload.any?
+
           copy_checklists(@copied_from)
         end
 

@@ -361,7 +361,7 @@ Redmine.Checklist = $.klass({
       value = $(event.target).val()
       span = this.findSpan(event)
       span.removeClass('invalid')
-      $('.checklist-item').each(function(i, elem) {
+      $('.checklist-item:not([style*="display: none;"])').each(function(i, elem) {
         e = $(elem)
         if (!e.is('.edit') && !e.is('.new'))
         {

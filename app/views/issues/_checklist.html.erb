@@ -9,7 +9,6 @@
   <ul id="checklist_items">
   <% @issue.checklists.each do |checklist_item| %>
     <%= render :partial => 'checklists/checklist_item', :object => checklist_item %>
-
   <% end %>
   </ul>
 </div>

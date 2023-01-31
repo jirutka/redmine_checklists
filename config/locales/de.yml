@@ -1,6 +1,10 @@
 # encoding: utf-8
 # German strings go here for Rails i18n
 de:
+  activerecord:
+    attributes:
+      checklists:
+        subject: Checklisten-Betreff
   label_checklist_plural: Checkliste
   field_checklist: Checkliste
   label_checklist_save_log: "Speichere Änderungen in der Ticket-Historie"
@@ -16,10 +20,12 @@ de:
   field_template_items: "Einträge"
   label_checklist_template: Checklisten-Vorlage
   label_add_checklists_from_template: "Aus Vorlage wählen"
+  label_checklists_from_template: Aus Vorlage
   label_select_template: "-- Vorlage auswählen --"
   label_checklist_category_not_specified: "-- Nicht spezifiziert --"
   label_checklists_description: 'Mehrere Einträge erlaubt (ein Eintrag pro Zeile)'
   label_checklist_item: Checklisten-Eintrag
+  label_checklist_section: Checklisten-Unterteilung
   label_checklist_deleted: gelöscht
   label_checklist_changed_from: geändert von
   label_checklist_changed_to: zu

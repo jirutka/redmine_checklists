@@ -7,5 +7,5 @@
                       id: "checklist-checkbox-#{checklist_item.id}"
     %>
   <% end %>
-  <%= textilizable(checklist_item, :subject).gsub(/<\/?(p|h\d+|li|ul)>/, '').strip.html_safe %>
+  <%= textilizable(checklist_item, :subject).gsub(/<\/?(p|h\d+|li|ul|hr \/)>/, '').strip.html_safe %>
 </li>

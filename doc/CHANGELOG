@@ -1,8 +1,27 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2021 RedmineUP
+Copyright (C) 2011-2023 RedmineUP
 http://www.redmineup.com/
+
+== 2023-01-16 v3.1.22
+
+* Added is_section API property
+* Added Hungarian locale (Krisztian Engi, Lilla Basilides)
+* Added Turkish locale (Adnan Topçu)
+* Updated Korean locale (Ki Won Kim)
+* Updated German locale (Joachim Mathes)
+* Fixed name validation for item checkbox
+* Fixed items sorting
+
+== 2022-02-21 v3.1.21
+
+* Redmine 5.0 compatibility fixes
+
+== 2021-10-12 v3.1.20
+
+* Fixed subtask checklists copy
+* Fixed checklist formating error
 
 == 2021-05-21 v3.1.19
 

@@ -6,6 +6,7 @@ api.array :checklists, api_meta(:total_count => @checklists.size) do
       api.subject    checklist.subject
       api.is_done    checklist.is_done
       api.position   checklist.position
+      api.is_section checklist.is_section
 
       api.created_at checklist.created_at
       api.updated_at checklist.updated_at

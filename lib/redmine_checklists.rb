@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,23 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-Rails.configuration.to_prepare do
-  require 'redmine_checklists/patches/compatibility/application_helper_patch'
-
-  require 'redmine_checklists/hooks/views_issues_hook'
-  require 'redmine_checklists/hooks/views_layouts_hook'
-  require 'redmine_checklists/hooks/controller_issues_hook'
-
-  require 'redmine_checklists/patches/issue_patch'
-  require 'redmine_checklists/patches/project_patch'
-  require 'redmine_checklists/patches/issues_controller_patch'
-  require 'redmine_checklists/patches/add_helpers_for_checklists_patch'
-  require 'redmine_checklists/patches/compatibility_patch'
-  require 'redmine_checklists/patches/issues_helper_patch'
-  require 'redmine_checklists/patches/compatibility/open_struct_patch'
-  require 'redmine_checklists/patches/compatibility/journal_patch'
-end
-
 module RedmineChecklists
   def self.settings() Setting.plugin_redmine_checklists.blank? ? {} : Setting.plugin_redmine_checklists end
 
@@ -45,3 +28,22 @@ module RedmineChecklists
     settings['issue_done_ratio'].to_i > 0
   end
 end
+
+REDMINE_CHECKLISTS_REQUIRED_FILES = [
+  'redmine_checklists/patches/compatibility/application_helper_patch',
+  'redmine_checklists/hooks/views_issues_hook',
+  'redmine_checklists/hooks/views_layouts_hook',
+  'redmine_checklists/hooks/controller_issues_hook',
+  'redmine_checklists/patches/issue_patch',
+  'redmine_checklists/patches/project_patch',
+  'redmine_checklists/patches/issues_controller_patch',
+  'redmine_checklists/patches/helper_for_checklists_patch',
+  'redmine_checklists/patches/issues_helper_patch',
+  'redmine_checklists/patches/compatibility/open_struct_patch',
+  'redmine_checklists/patches/compatibility/journal_patch',
+]
+
+REDMINE_CHECKLISTS_REQUIRED_FILES << 'redmine_checklists/patches/compatibility_patch' if Redmine::VERSION.to_s < '2.3'
+
+base_url = File.dirname(__FILE__)
+REDMINE_CHECKLISTS_REQUIRED_FILES.each { |file| require(base_url + '/' + file) }

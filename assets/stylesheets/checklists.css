@@ -127,6 +127,7 @@ table.list td.checklist_relations { text-align: left }
   list-style: none;
   padding: 2px;
   border-radius: 2px;
+  z-index: 10;
 }
 
 #checklist-menu li {

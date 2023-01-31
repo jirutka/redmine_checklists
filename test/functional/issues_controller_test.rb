@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -176,6 +176,20 @@ class IssuesControllerTest < ActionController::TestCase
     assert_equal 1, issue.checklists.count
     assert_equal 'item 001', issue.checklists.last.subject
     assert_not_nil issue
+  end
+
+  def test_delete_issue_with_checklists
+    @request.session[:user_id] = 1
+    other_checklist = Checklist.first
+    other_checklist.update(position: 2)
+
+    assert_difference('Issue.count', -1) do
+      assert_difference('Checklist.count', -2) do
+        compatible_request :post, :destroy, id: '2'
+        assert_response :redirect
+      end
+    end
+    assert_equal other_checklist.position, other_checklist.reload.position
   end
 
   def test_create_issue_using_json

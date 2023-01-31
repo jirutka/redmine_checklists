@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2021 RedmineUP
+# Copyright (C) 2011-2023 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -63,12 +63,44 @@ class Redmine::ApiTest::ChecklistsTest < Redmine::ApiTest::Base
     end
   end
 
+  def test_get_checklists_with_section_xml
+    compatible_api_request :get, '/issues/2/checklists.xml', {}, credentials('admin')
+
+    assert_select 'checklists[type=array]' do
+      assert_select 'checklist' do
+        assert_select 'id', :text => '4'
+        assert_select 'subject', :text => 'New section'
+        assert_select 'is_section', :text => 'true'
+      end
+    end
+  end
+
   def test_get_checklists_1_xml
     compatible_api_request :get, '/checklists/1.xml', {}, credentials('admin')
 
     assert_select 'checklist' do
       assert_select 'id', :text => '1'
       assert_select 'subject', :text => 'First todo'
+    end
+  end
+
+  def test_get_checklists_2_with_section_xml
+    compatible_api_request :get, '/checklists/4.xml', {}, credentials('admin')
+
+    assert_select 'checklist' do
+      assert_select 'id', :text => '4'
+      assert_select 'subject', :text => 'New section'
+      assert_select 'is_section', :text => 'true'
+    end
+  end
+
+  def test_checklists_2_should_not_section_xml
+    compatible_api_request :get, '/checklists/3.xml', {}, credentials('admin')
+
+    assert_select 'checklist' do
+      assert_select 'id', :text => '3'
+      assert_select 'subject', :text => 'Third todo'
+      assert_select 'is_section', :text => 'false'
     end
   end
 
