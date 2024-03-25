@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -55,19 +55,11 @@ end
 
 include RedmineChecklists::TestHelper
 
-if ActiveRecord::VERSION::MAJOR >= 4
-  class RedmineChecklists::IntegrationTest < Redmine::IntegrationTest; end
-else
-  class RedmineChecklists::IntegrationTest < ActionController::IntegrationTest; end
-end
+class RedmineChecklists::IntegrationTest < Redmine::IntegrationTest; end
 
 class RedmineChecklists::TestCase
   def self.create_fixtures(fixtures_directory, table_names, class_names = {})
-    if ActiveRecord::VERSION::MAJOR >= 4
-      ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
-    else
-      ActiveRecord::Fixtures.create_fixtures(fixtures_directory, table_names, class_names = {})
-    end
+    ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
   end
 
   def self.prepare

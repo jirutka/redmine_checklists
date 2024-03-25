@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -22,8 +22,6 @@ module RedmineChecklists
     module ApplicationHelperPatch
       def self.included(base) # :nodoc:
         base.class_eval do
-          unloadable # Send unloadable so it will not be unloaded in development
-
           def stocked_reorder_link(object, name = nil, url = {}, method = :post)
             Redmine::VERSION.to_s > '3.3' ? reorder_handle(object, :param => name) : reorder_links(name, url, method)
           end

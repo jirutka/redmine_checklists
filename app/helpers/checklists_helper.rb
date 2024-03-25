@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ module ChecklistsHelper
     @new_object ||= f.object.class.reflect_on_association(association).klass.new
   end
 
-  def fields(f, association)
+  def checklist_fields(f, association)
     @fields ||= f.fields_for(association, new_object(f, association), :child_index => "new_#{association}") do |builder|
       render(association.to_s.singularize + "_fields", :f => builder)
     end

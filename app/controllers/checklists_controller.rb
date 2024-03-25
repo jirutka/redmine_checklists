@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
 class ChecklistsController < ApplicationController
-  unloadable
 
   before_action :find_checklist_item, :except => [:index, :create]
   before_action :find_issue_by_id, :only => [:index, :create]

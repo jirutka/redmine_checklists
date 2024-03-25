@@ -357,11 +357,11 @@ Redmine.Checklist = $.klass({
   },
 
   enableUniquenessValidation: function() {
-    this.root.on('keyup', 'input.edit-box', $.proxy(function(event) {
+    this.root.on('input', 'input.edit-box', $.proxy(function(event) {
       value = $(event.target).val()
       span = this.findSpan(event)
       span.removeClass('invalid')
-      $('.checklist-item:not([style*="display: none;"])').each(function(i, elem) {
+      $('.checklist-item.existing').each(function(i, elem) {
         e = $(elem)
         if (!e.is('.edit') && !e.is('.new'))
         {

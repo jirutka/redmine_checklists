@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2023 RedmineUP
+# Copyright (C) 2011-2024 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ class IssuesControllerTest < ActionController::TestCase
   def test_new_issue_without_project
     compatible_request :get, :new
     assert_response :success
-  end if Redmine::VERSION.to_s > '3.0'
+  end
 
   def test_get_show_issue
     issue = Issue.find(1)
@@ -91,11 +91,7 @@ class IssuesControllerTest < ActionController::TestCase
 
     @request.session[:user_id] = 1
     issue = Issue.find(1)
-    if Redmine::VERSION.to_s > '2.3' && Redmine::VERSION.to_s < '3.0'
-      compatible_xhr_request :put, :update_form, :issue => parameters, :project_id => issue.project
-    else
-      compatible_xhr_request :put, :new, :issue => parameters, :project_id => issue.project
-    end
+    compatible_xhr_request :put, :new, :issue => parameters, :project_id => issue.project
     assert_response :success
     assert_match 'text/javascript', response.content_type
     assert_match 'FirstChecklist', response.body
