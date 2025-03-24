@@ -136,7 +136,7 @@ table.list td.checklist_relations { text-align: left }
   border: 1px solid white;
 }
 
-#checklist-menu a {
+#checklist-menu a:not(:has(svg)) {
   text-decoration: none !important;
   padding: 2px 0px 2px 20px;
 }

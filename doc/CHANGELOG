@@ -1,8 +1,24 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2024 Kirill Bezrukov (RedmineUP)
+Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
+
+== 2025-03-03 v3.1.26
+
+* Added Redmine 6.0 compatibility
+* Added svg icons for compatibility with Redmine 6
+* Updated Swedish locale (Jimmy Westberg)
+
+== 2024-08-28 v3.1.25
+
+* Fixed copying of checklists with bulk copying of issues
+* Fixed notifications when changing a checklist and a log at the same time
+
+== 2024-05-27 v3.1.24
+
+* Updated Redmine 5.0 compatibility
+* Fixed input for items with <> tags
 
 == 2024-02-14 v3.1.23
 

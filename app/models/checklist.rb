@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-class Checklist < ActiveRecord::Base
-   
+class Checklist < ApplicationRecord
+
   include Redmine::SafeAttributes
   belongs_to :issue
   belongs_to :author, :class_name => "User", :foreign_key => "author_id"

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -25,14 +25,11 @@ module RedmineChecklists
       def self.included(base) # :nodoc:
         base.send(:include, InstanceMethods)
         base.class_eval do
-          attr_accessor :old_checklists
-          attr_accessor :removed_checklist_ids
-          attr_accessor :checklists_from_params
+          attr_accessor :old_checklists, :removed_checklist_ids, :checklists_from_params
           attr_reader :copied_from
 
-          alias_method :copy_without_checklist, :copy
-          alias_method :copy, :copy_with_checklist
-          after_save :copy_subtask_checklists
+          alias_method :after_create_from_copy_without_checklists, :after_create_from_copy
+          alias_method :after_create_from_copy, :after_create_from_copy_with_checklists
 
           has_many :checklists, lambda { order("#{Checklist.table_name}.position") }, :class_name => 'Checklist', :dependent => :destroy, :inverse_of => :issue
 
@@ -46,25 +43,14 @@ module RedmineChecklists
       end
 
       module InstanceMethods
-        def copy_checklists(arg)
-          issue = arg.is_a?(Issue) ? arg : Issue.visible.find(arg)
-          return unless issue
-
-          issue.checklists.each do |checklist|
-            Checklist.create(checklist.attributes.except('id', 'issue_id').merge(issue: self))
-          end
+        def copy_checklists
+          checklists_attributes = copied_from.checklists.map { |checklist| checklist.attributes.dup.except('id', 'issue_id').merge('issue_id' => id) }
+          checklists.create(checklists_attributes)
         end
 
-        def copy_subtask_checklists
-          return if checklists_from_params || !copy? || parent_id.nil? || checklists.reload.any?
-
-          copy_checklists(@copied_from)
-        end
-
-        def copy_with_checklist(attributes = nil, copy_options = {})
-          copy = copy_without_checklist(attributes, copy_options)
-          copy.copy_checklists(self)
-          copy
+        def after_create_from_copy_with_checklists
+          after_create_from_copy_without_checklists
+          copy_checklists if copy? && checklists.blank? && copied_from.checklists.present? && !checklists_from_params
         end
 
         def all_checklist_items_is_done?

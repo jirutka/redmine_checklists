@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmineup version_or_higher: '1.0.5' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
+requires_redmineup version_or_higher: '1.0.10' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
 
-CHECKLISTS_VERSION_NUMBER = '3.1.23'.freeze
+CHECKLISTS_VERSION_NUMBER = '3.1.26'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
@@ -30,18 +30,18 @@ Redmine::Plugin.register :redmine_checklists do
   url 'https://www.redmineup.com/pages/plugins/checklists'
   author_url 'mailto:support@redmineup.com'
 
-  requires_redmine :version_or_higher => '4.0'
+  requires_redmine version_or_higher: '4.0'
 
-  settings :default => {
-    :save_log => true,
-    :issue_done_ratio => false
-  }, :partial => 'settings/checklists/checklists'
+  settings default: {
+    save_log: true,
+    issue_done_ratio: false
+  }, partial: 'settings/checklists/checklists'
 
   Redmine::AccessControl.map do |map|
     map.project_module :issue_tracking do |map|
-      map.permission :view_checklists, { :checklists => [:show, :index] }
-      map.permission :done_checklists, { :checklists => :done }
-      map.permission :edit_checklists, { :checklists => [:done, :create, :destroy, :update] }
+      map.permission :view_checklists, { checklists: [:show, :index] }
+      map.permission :done_checklists, { checklists: :done }
+      map.permission :edit_checklists, { checklists: [:done, :create, :destroy, :update] }
     end
   end
 end
@@ -50,3 +50,4 @@ if (Rails.configuration.respond_to?(:autoloader) && Rails.configuration.autoload
   Rails.autoloaders.each { |loader| loader.ignore(File.dirname(__FILE__) + '/lib') }
 end
 require File.dirname(__FILE__) + '/lib/redmine_checklists'
+require 'redmineup/patches/compatibility_patch'

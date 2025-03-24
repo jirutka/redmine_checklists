@@ -4,7 +4,7 @@
   <% end %>
 
   <span class="checklist-show checklist-subject <%= done_css(f) %>">
-    <%= f.object.subject.to_s.strip.html_safe %>
+    <%= f.object.subject.to_s.strip.gsub('<', '&lt;').gsub('>', '&gt;').html_safe %>
   </span>
 
   <span class="checklist-edit checklist-new checklist-edit-box">
@@ -14,13 +14,15 @@
 
   <span class="checklist-edit-only checklist-edit-save-button"><%= submit_tag l(:button_save), type: 'button', class: 'item item-save small' %> </span>
   <span class="checklist-edit-only checklist-edit-reset-button"><% concat l(:button_cancel) %> </span>
-  <span class="checklist-show-only checklist-remove"><%= link_to_remove_checklist_fields "", f, class: 'icon icon-del' %></span>
+  <span class="checklist-show-only checklist-remove"><%= link_to_remove_checklist_fields sprite_icon('del', ''), f, class: 'icon icon-del' %></span>
 
   <%= f.hidden_field :position, class: 'checklist-item-position' %>
   <%= f.hidden_field :is_section, class: 'checklist-item-is_section' %>
   <%= f.hidden_field :id, class: 'checklist-item-id' %>
 
-  <span class="icon icon-add checklist-new-only save-new-by-button"></span>
+  <span class="icon icon-add checklist-new-only save-new-by-button">
+    <%= sprite_icon('add') %>
+  </span>
 
  <br>
 </span>

@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -232,5 +232,43 @@ class IssuesControllerTest < ActionController::TestCase
     compatible_request :get, :show, id: issue.id
     assert_response :success
     assert_not_include 'changed from [ ] TEST to [x] TEST', response.body
+  end
+
+  def test_bulk_copy_issues_with_checklists
+    @target_project = Project.find(2)
+    @target_project.issues.destroy_all
+    issue1 = Issue.find(1) # issue with checklists
+    issue3 = Issue.find(3) # issue without checklists
+
+    @request.session[:user_id] = 2
+
+    assert_difference 'Issue.count', 2 do
+      assert_no_difference 'Project.find(1).issues.count' do
+        post(
+          :bulk_update,
+          :params => {
+            :ids => [issue1.id, issue3.id],
+            :copy => '1',
+            :issue => {
+              :project_id => @target_project.id,
+              :tracker_id => '',
+              :assigned_to_id => '2',
+              :status_id => '1'
+            }
+          }
+        )
+      end
+    end
+
+    copied_issues = Issue.where(project_id: @target_project.id)
+    assert_equal 2, copied_issues.count
+    copied_issues.each do |issue|
+      assert_equal  @target_project.id, issue.project_id, "Project is incorrect"
+      assert_equal 2, issue.assigned_to_id, "Assigned to is incorrect"
+      assert_equal 1, issue.status_id, "Status is incorrect"
+    end
+
+    issue_with_checklists = copied_issues.select { |issue| issue.checklists.present? }.first
+    assert_equal issue1.checklists.count, issue_with_checklists.checklists.count
   end
 end

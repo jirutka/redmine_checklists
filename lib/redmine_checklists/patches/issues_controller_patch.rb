@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2024 RedmineUP
+# Copyright (C) 2011-2025 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -49,10 +49,10 @@ module RedmineChecklists
 
         def save_before_state
           @issue.old_checklists = @issue.checklists.to_json
-          checklists_params = params[:issue].present? && params[:issue][:checklists_attributes].present? ? params[:issue][:checklists_attributes] : {}
+          checklists_params = params.dig(:issue, :checklists_attributes) || {}
           @issue.removed_checklist_ids =
             if checklists_params.present?
-              checklists_params = checklists_params.respond_to?(:to_unsafe_hash) ? checklists_params.to_unsafe_hash : checklists_params
+              checklists_params = checklists_params.to_unsafe_hash if checklists_params.respond_to?(:to_unsafe_hash)
               checklists_params.map { |_k, v| v['id'].to_i if ['1', 'true'].include?(v['_destroy']) }.compact
             else
               []
