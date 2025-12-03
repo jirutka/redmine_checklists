@@ -53,7 +53,19 @@ class IssuesControllerTest < ActionController::TestCase
 
   def setup
     @request.session[:user_id] = 1
+    @custom_field_checklist_params = {
+      checklist: {
+        '0' => {
+          subject: "Item A",
+          _destroy: "false",
+          position: "0",
+          is_section: "false",
+          id: ""
+        }
+      }
+    }
     RedmineChecklists::TestCase.prepare
+    @custom_field_checklist = Issue.find(1).available_custom_fields.detect { |custom_field| custom_field.name == 'Test checklist' }
   end
 
   def test_new_issue_without_project
@@ -129,7 +141,7 @@ class IssuesControllerTest < ActionController::TestCase
     last_journal = issue.journals.last
     assert_equal last_journal.details.size, 1
     assert_equal last_journal.details.first.prop_key, 'checklist'
-    assert_select "#change-#{last_journal.id} .details li", 'Checklist item changed from [ ] TEST to [x] TEST'
+    assert_select "#change-#{last_journal.id} ul li", 'Checklist item changed from [ ] TEST to [x] TEST'
   end
 
   def test_empty_update_dont_write_to_journal

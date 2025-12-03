@@ -19,11 +19,10 @@
 
 class ChecklistsController < ApplicationController
 
-  before_action :find_checklist_item, :except => [:index, :create]
-  before_action :find_issue_by_id, :only => [:index, :create]
-  before_action :authorize, :except => [:done]
+  before_action :find_checklist_item, :except => [:index, :create, :custom_field_done]
+  before_action :find_issue_by_id, :only => [:index, :create, :custom_field_done]
+  before_action :authorize, :except => [:done, :custom_field_done]
   helper :issues
-
   accept_api_auth :index, :update, :destroy, :create, :show
 
   def index

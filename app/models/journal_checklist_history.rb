@@ -18,7 +18,7 @@
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
 class JournalChecklistHistory
-  def self.can_fixup?(journal_details)
+  def self.can_fixup?(journal_details, prop_key = 'checklist')
     return false if journal_details.journal.nil?
 
     issue = journal_details.journal.journalized
@@ -32,24 +32,24 @@ class JournalChecklistHistory
     return false if prev_journal.user_id != journal_details.journal.user_id
     return false if Time.zone.now > prev_journal.created_on + 1.minute
 
-    prev_journal.details.all? { |x| x.prop_key == 'checklist' } &&
-      journal_details.journal.details.all? { |x| x.prop_key == 'checklist' } &&
+    prev_journal.details.all? { |x| x.prop_key == prop_key } &&
+      journal_details.journal.details.all? { |x| x.prop_key == prop_key } &&
       journal_details.journal.notes.blank? &&
       prev_journal.notes.blank? &&
-      prev_journal.details.select { |x| x.prop_key == 'checklist' }.size == 1
+      prev_journal.details.select { |x| x.prop_key == prop_key }.size == 1
   end
 
-  def self.fixup(journal_details)
+  def self.fixup(journal_details, prop_key = 'checklist')
     issue = journal_details.journal.journalized
     prev_journal_scope = issue.journals.order('id DESC')
     prev_journal_scope = prev_journal_scope.where('id <> ?', journal_details.journal_id) if journal_details.journal_id
     prev_journal = prev_journal_scope.first
-    checklist_details = prev_journal.details.find{ |x| x.prop_key == 'checklist'}
+    checklist_details = prev_journal.details.find{ |x| x.prop_key == prop_key}
     if new(checklist_details.old_value, journal_details.value).empty_diff?
       prev_journal.destroy
     else
       checklist_details.update(value: journal_details.value)
-      journal_details.journal.destroy unless journal_details.journal.new_record? && journal_details.journal.details.any?{ |x| x.prop_key != 'checklist'}
+      journal_details.journal.destroy unless journal_details.journal.new_record? && journal_details.journal.details.any?{ |x| x.prop_key != prop_key}
     end
   end
 
@@ -116,6 +116,8 @@ class JournalChecklistHistory
   end
 
   def force_object(unk)
+    return [] if unk.nil?
+
     if unk.is_a?(String)
       json = JSON.parse(unk)
       json = [json] unless json.is_a?(Array)

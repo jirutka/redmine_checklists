@@ -1,9 +1,44 @@
-# encoding: utf-8
 ja:
+  activerecord:
+    attributes:
+      checklists:
+        subject: "チェックリスト名称" # Checklist subject
   label_checklist_plural: "チェックリスト" # Checklist
   field_checklist: "チェックリスト" # Checklist
   label_checklist_save_log: "変更をチケットに記録する" # Save changes to issue log
-  label_checklist_done_ratio: "チェック完了率" # Set issue done ratio
-  permission_view_checklists: "チェックリストの参照" # View checklist
-  permission_done_checklists: "チェックリストへ済印" # Done checklist items
-  permission_edit_checklists: "チェックリストの編集" # Edit checklist items
+  label_checklist_done_ratio: "チェックリストの進捗率を更新する" # Set issue done ratio
+  permission_view_checklists: "チェックリストの表示" # View checklist
+  permission_done_checklists: "チェック項目の完了" # Done checklist items
+  permission_edit_checklists: "チェック項目の編集" # Edit checklist items
+  permission_manage_checklist_templates: "チェックリストの雛形の管理"
+  label_checklist_template_category_plural: "雛形のカテゴリ" # Template categories
+  label_checklist_template_category_new: "新規カテゴリ" # New category
+  field_checklist_template_category: "カテゴリ" # Category
+  label_checklist_templates: "チェックリスト雛形" # Checklist templates
+  label_checklist_new_checklist_template: "新規チェックリスト雛形" # New checklist template
+  field_template_items: "チェック項目" # Template items
+  label_checklist_template: "チェックリスト雛形" # Checklist template
+  label_add_checklists_from_template: "雛形から追加" # Add from template
+  label_checklists_from_template: "雛形から選択" # From template
+  label_select_template: "-- 雛形を選択 --" # "-- Select template --"
+  label_checklist_category_not_specified: "-- 未選択--" # "-- Not specified --"
+  label_checklists_description: '複数指定可能（1行毎に1つのチェック項目になります）' # 'Multiple values allowed (one line for each value)'
+  label_checklist_item: "チェック項目" # Checklist item
+  label_checklist_section: "節見出し" # Checklist section
+  label_checklist_deleted: "削除済" # deleted
+  label_checklist_changed_from: "変更前" # changed from
+  label_checklist_changed_to: "変更後" # to
+  label_checklist_added: "作成済" # added
+  label_checklist_done: "完了" # set to Done
+  label_checklist_undone: "未完了" # set to Not done
+  label_checklist_updated: "チェック項目が編集されました" # Checklist item edited
+  label_checklist_status: "チェックリストの状態" # Checklist status
+  label_checklist_status_done: "完了" # Done
+  label_checklist_status_undone: "未完了" # Undone
+  label_checklist_is_default: "デフォルトにする" # Default
+  field_is_for_tracker: "トラッカー" # Tracker
+  label_checklists_must_be_completed: "未チェックの項目があるのでチケットを完了できません" # All checklists of an issue must be done before closing
+  label_checklist_block_issue_closing: "チケットの完了をブロックする" # Block issue closing
+  label_checklist_show_closed: "完了した項目を表示" # Show closed
+  label_checklist_hide_closed: "完了した項目を隠す" # Hide closed
+  label_checklist_new_section: "節見出しの追加" # New section

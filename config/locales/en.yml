@@ -42,3 +42,8 @@ en:
   label_checklist_show_closed: Show closed
   label_checklist_hide_closed: Hide closed
   label_checklist_new_section: New section
+  label_checklist: Checklist
+
+  custom_field_checklist_section: "%{custom_field_name} section"
+  label_cf_checklist_non_unique_subject_error: Checklist items must be unique
+  label_cf_checklist_blank_subject_error: Checklist item cannot be blank

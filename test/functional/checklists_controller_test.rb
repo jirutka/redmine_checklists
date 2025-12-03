@@ -45,7 +45,6 @@ class ChecklistsControllerTest < ActionController::TestCase
            :journal_details,
            :queries
   RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
-
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'

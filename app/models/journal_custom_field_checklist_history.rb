@@ -17,12 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-class ModifyChecklistSubjectLength < ActiveRecord::Migration[4.2]
-  def self.up
-    change_column :checklists, :subject, :text, :limit => 1000
-  end
+class JournalCustomFieldChecklistHistory < JournalChecklistHistory
+  private def force_object(unk)
+    return [] if unk.nil?
 
-  def self.down
-    change_column :checklists, :subject, :string, :limit => 256
+    if unk.is_a?(String)
+      json = JSON.parse(unk)
+      json = [json] unless json.is_a?(Array)
+      json.map do |x|
+        item = x.has_key?('checklist') ? x['checklist'] : x
+        item[:id] = Digest::MD5.hexdigest(item['subject']) if item['subject']
+        OpenStruct2.new(item)
+      end
+    end
   end
 end

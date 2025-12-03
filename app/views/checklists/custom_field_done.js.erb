@@ -1,0 +1,2 @@
+$("#checklist_item_<%= @checklist_item_subject_hash %>").toggleClass('is-done-checklist-item');
+$('#cf_checklist_custom_field .checklist-item#<%= @checklist_item_subject_hash %> input[type=checkbox]').trigger('click');

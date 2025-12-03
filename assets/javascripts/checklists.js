@@ -203,9 +203,10 @@ Redmine.Checklist = $.klass({
   },
 
   onClickAddChecklistItemMenuButton: function() {
-    $('#checklist-menu .add-checklist-item').on('click', $.proxy(function(event) {
+    var menuId = this.root.attr('data-id')
+    $(`#checklist-menu .add-checklist-item, #cf-checklist-menu_${menuId} .add-checklist-item`).on('click', $.proxy(function(event) {
       this.preventEvent(event);
-      var span = $('#checklist_form_items > span.checklist-item.new');
+      var span = $(`#${this.root.attr('id')} span.checklist-item.new`);
       if (this.canSave(span)) {
         this.transformItem();
         this.addChecklistFields();
@@ -215,9 +216,10 @@ Redmine.Checklist = $.klass({
   },
 
   onClickNewSectionMenuButton: function() {
-    $('#checklist-menu .add-checklist-section').on('click', $.proxy(function(event) {
+    var menuId = this.root.attr('data-id')
+    $(`#checklist-menu .add-checklist-section, #cf-checklist-menu_${menuId} .add-checklist-section`).on('click', $.proxy(function(event) {
       this.preventEvent(event);
-      var span = $('#checklist_form_items > span.checklist-item.new');
+      var span = $(`#${this.root.attr('id')} span.checklist-item.new`);
       if (this.canSave(span)) {
         this.transformItem(null, null, null, true);
         this.addChecklistFields();
@@ -235,6 +237,7 @@ Redmine.Checklist = $.klass({
       var position = $plusButton.position();
       $menu.css('left', (position.left + 'px'));
       $menu.css('top', (position.top + $plusButton.height() + 'px'));
+      $menu.css('position', 'absolute');
       $menu.show();
     });
 
@@ -244,11 +247,11 @@ Redmine.Checklist = $.klass({
       }, 500);
     });
 
-    $('#checklist-menu').on('mouseenter', function() {
+    $(`.${this.root.attr('id')}`).on('mouseenter', function() {
       clearTimeout(hideMenuTimer);
     });
 
-    $('#checklist-menu').on('mouseleave', function() {
+    $(`.${this.root.attr('id')}`).on('mouseleave', function() {
       $menu.hide();
     });
   },
@@ -256,8 +259,7 @@ Redmine.Checklist = $.klass({
   onIssueFormSubmitRemoveEmptyChecklistItems: function() {
     $('body').on('submit', '#issue-form', function(){
       $('.checklist-subject-hidden').each(function(i, elem) {
-        if ($(elem).val() == "")
-        {
+        if ($(elem).val() == "") {
           $(elem).closest('.checklist-item').remove()
         }
       })
@@ -281,7 +283,8 @@ Redmine.Checklist = $.klass({
   },
 
   makeChecklistsSortable: function() {
-    $('#checklist_form_items').sortable({
+    var menuId = this.root.attr('data-id')
+    $(`#checklist_form_items, #cf_checklist_form_items_${menuId}`).sortable({
       items: '.checklist-item.show',
       helper: "clone",
       stop: function (event, ui) {
@@ -320,7 +323,7 @@ Redmine.Checklist = $.klass({
   onCheckboxChanged: function() {
     this.root.on('change', 'input[type=checkbox]', $.proxy(function(event){
       checkbox = $(event.target)
-      subj = this.findSpan(event).find('.checklist-subject')
+      subj = this.findSpan(event).find('.checklist-show')
       if (checkbox.is(':checked'))
         subj.addClass('is-done-checklist-item')
       else
@@ -333,13 +336,20 @@ Redmine.Checklist = $.klass({
       this.darkenCompletedSections();
       checkbox = $(event.target)
       url = checkbox.attr('data_url')
-      $.ajax({type: "PUT", url: url, data: { is_done: checkbox.prop('checked') }, dataType: 'script'})
+      $.ajax({
+        type: "PUT",
+        url: url,
+        data: {
+          is_done: checkbox.prop('checked')
+        },
+        dataType: 'script'
+      })
     }, this))
   },
 
   darkenCompletedSections: function() {
     var isCompletedSection = true;
-    var reversedChecklistItems = $('#checklist_items li').get().reverse();
+    var reversedChecklistItems = $(`#${this.root.attr('id')} li`).get().reverse();
 
     $(reversedChecklistItems).each(function(index, element) {
       var $element = $(element);
@@ -361,7 +371,7 @@ Redmine.Checklist = $.klass({
       value = $(event.target).val()
       span = this.findSpan(event)
       span.removeClass('invalid')
-      $('.checklist-item.existing').each(function(i, elem) {
+      $(`#${this.root.attr('id')} .checklist-item.existing`).each(function(i, elem) {
         e = $(elem)
         if (!e.is('.edit') && !e.is('.new'))
         {
@@ -403,30 +413,29 @@ Redmine.Checklist = $.klass({
   },
 
   init: function(element) {
-    this.root = element
-    this.content = element.data('checklist-fields')
-    this.onEnterInNewChecklistItemForm()
-    this.onClickPlusInNewChecklistItem()
+    this.root = element;
+    this.content = element.data('checklist-fields');
+    this.onEnterInNewChecklistItemForm();
+    this.onClickPlusInNewChecklistItem();
+    this.darkenCompletedSections();
 
     if (this.content) {
-      this.$plusButtonMenu = $('#checklist-menu').menu();
+      this.$plusButtonMenu = $(`.${this.root.attr('id')}`).menu();
       if (this.$plusButtonMenu.length > 0) {
         this.onMouseEnterLeavePlusButton();
         this.onClickAddChecklistItemMenuButton();
         this.assignTemplateSelectedEvent();
         this.onClickNewSectionMenuButton();
       }
-    } else {
-      this.darkenCompletedSections()
     }
 
-    this.onIssueFormSubmitRemoveEmptyChecklistItems()
-    this.onChecklistRemove()
-    this.makeChecklistsSortable()
-    this.makeChecklistsEditable()
-    this.onCheckboxChanged()
-    this.onChangeCheckbox()
-    this.enableUniquenessValidation()
+    this.onIssueFormSubmitRemoveEmptyChecklistItems();
+    this.onChecklistRemove();
+    this.makeChecklistsSortable();
+    this.makeChecklistsEditable();
+    this.onCheckboxChanged();
+    this.onChangeCheckbox();
+    this.enableUniquenessValidation();
   }
 
 })
@@ -477,9 +486,24 @@ $(document).ready(function () {
     var originContextMenuCheckSelectionBox = contextMenuCheckSelectionBox;
     contextMenuCheckSelectionBox = function (tr, checked) {
       var $td = tr.find('td.checklist_relations');
+      var $cfs = tr.find('td.checklist');
+
       var $checklist = $td.find('.checklist').detach();
+      var $cf_checklist = {};
+      $cfs.each(function (ind, el) {
+        $cf_checklist[`${ind}`] = $(el).find('div.cf_checklist').detach();
+      });
+
       originContextMenuCheckSelectionBox(tr, checked);
+
       $checklist.appendTo($td);
+      $cfs.each(function (ind, el) {
+        $cf_checklist[`${ind}`].appendTo($(el));
+      });
     };
   }
+  $('td.checklist ul.cf_checklist_items li input[type=checkbox]').each(function() {
+    $(this).removeAttr('data_url');
+    $(this).attr('disabled', 'disabled')
+  });
 });

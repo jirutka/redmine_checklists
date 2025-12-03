@@ -41,7 +41,7 @@ class Checklist < ApplicationRecord
   up_acts_as_list scope: :issue
 
   validates_presence_of :subject
-  validates_length_of :subject, maximum: 512
+  validates_length_of :subject, :maximum => 1000
   validates_presence_of :position
   validates_numericality_of :position
 

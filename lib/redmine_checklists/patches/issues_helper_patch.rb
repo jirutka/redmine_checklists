@@ -33,7 +33,8 @@ module RedmineChecklists
       module InstanceMethods
 
         def details_to_strings_with_checklists(details, no_html = false, options = {})
-          details_checklist, details_other = details.partition{ |x| x.prop_key == 'checklist' }
+          custom_field_checklist_ids = @issue.available_custom_fields.select { |cf| cf.field_format == 'checklist' }.pluck(:id)
+          details_checklist, details_other = details.partition{ |x| x.prop_key == 'checklist' || custom_field_checklist_ids.include?(x.prop_key.to_i) }
           if @issue.nil? || !User.current.allowed_to?(:view_checklists, @issue.try(:project), global: @issue.present?)
             return details_to_strings_without_checklists(details_other, no_html, options)
           end
@@ -42,25 +43,32 @@ module RedmineChecklists
             result = []
             diff = Hash.new([])
 
-            if Checklist.old_format?(detail)
-              result << "<b>#{l(:label_checklist_item)}</b> #{l(:label_checklist_changed_from)} #{detail.old_value} #{l(:label_checklist_changed_to)} #{detail.value}"
+            if detail.custom_field.present?
+              item_name = { name: detail.custom_field.name, section: l(:custom_field_checklist_section, custom_field_name: detail.custom_field.name) }
             else
-              diff = JournalChecklistHistory.new(detail.old_value, detail.value).diff
+              item_name = { name: l(:label_checklist_item), section: l(:label_checklist_item) }
+            end
+
+
+            if Checklist.old_format?(detail)
+              result << "<b>#{item_name[:name]}</b> #{l(:label_checklist_changed_from)} #{detail.old_value} #{l(:label_checklist_changed_to)} #{detail.value}"
+            else
+              diff = custom_field_checklist_ids.include?(detail.prop_key.to_i) ? JournalCustomFieldChecklistHistory.new(detail.old_value, detail.value).diff : JournalChecklistHistory.new(detail.old_value, detail.value).diff
             end
 
             checklist_item_label = lambda do |item|
-              item[:is_section] ? l(:label_checklist_section) : l(:label_checklist_item)
+              item[:is_section] ? item_name[:section] : item_name[:name]
             end
 
             if diff[:done].any?
               diff[:done].each do |item|
-                result << "<b>#{ERB::Util.h l(:label_checklist_item)}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_done)}"
+                result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_done)}"
               end
             end
 
             if diff[:undone].any?
               diff[:undone].each do |item|
-                result << "<b>#{ERB::Util.h l(:label_checklist_item)}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_undone)}"
+                result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_undone)}"
               end
             end
 

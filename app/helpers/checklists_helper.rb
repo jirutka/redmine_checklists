@@ -36,15 +36,25 @@ module ChecklistsHelper
   end
 
   def new_or_show(f)
-    if f.object.new_record?
-      if f.object.subject.present?
-        "show"
-      else
-        "new"
-      end
+    object = f.respond_to?(:object) ? f.object : f
+
+    if object.new_record?
+      object.subject.present? ? 'show' : 'new'
     else
-      "show"
+      'show'
     end
+  end
+
+  def custom_field_checklist_fields(custom_field)
+    custom_field.fields_for(:checklist) do |new_checklist|
+      new_checklist.fields_for(:new_checklist, RedmineChecklists::FieldFormat::ChecklistStruct.new({})) do |f|
+        render(partial: 'common/custom_field_checklist_item', locals: {custom_field: f})
+      end
+    end
+  end
+
+  def custom_field_field_name(custom_field, ind, name)
+    "#{custom_field.object_name}[checklist][#{ind}][#{name}]"
   end
 
   def done_css(f)

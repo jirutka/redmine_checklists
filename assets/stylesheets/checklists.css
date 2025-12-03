@@ -1,12 +1,23 @@
-#checklist_form_items input[type="checkbox"], 
-#checklist_items input[type="checkbox"] {
+#checklist_form_items input[type="checkbox"],
+#checklist_items input[type="checkbox"], .cf_checklist_form_items input[type="checkbox"] {
   height: initial;
 }
 
+div.checklist_cf {
+  margin-bottom: 15px;
+}
+
 div#checklist ul {
-	list-style: none;
-	padding-left: 0px;
-	margin-bottom: 0px;
+  list-style: none;
+  padding-left: 0px;
+  margin-bottom: 0px;
+}
+
+div.cf_checklist ul {
+  list-style: none;
+  padding-left: 0px;
+  margin: 0;
+  text-align: left;
 }
 
 div#checklist li {
@@ -14,18 +25,27 @@ div#checklist li {
   margin-left: 10px;
 }
 
+div.cf_checklist li {
+  padding-bottom: 0;
+  margin-left: 0;
+}
+
 .checklist-checkbox {height: inherit}
 
-#checklist li:hover a.delete {opacity: 1;}
+#checklist li:hover a.delete, div.cf_checklist li:hover a.delete {opacity: 1;}
 
-#checklist a.delete {opacity: 0.4;}
+#checklist a.delete, div.cf_checklist a.delete {opacity: 0.4;}
 
 span.checklist-item {
   display: block;
   margin-bottom: 5px;
 }
 
-span.checklist-subject.is-done-checklist-item, span.checklist-item.is-done-checklist-item, #checklist_items li.is-done-checklist-item  {
+span.checklist-subject.is-done-checklist-item,
+span.is-done-checklist-item,
+span.checklist-item.is-done-checklist-item,
+#checklist_items li.is-done-checklist-item,
+ul.cf_checklist_items li.is-done-checklist-item {
   text-decoration: line-through;
   color: #999;
 }
@@ -35,12 +55,12 @@ span.checklist-remove { margin-left: 2px; opacity: 0.4;}
 span.checklist-remove:hover  {opacity: 1;}
 
 span.checklist-edit-box input {
-    margin-right: 6px;
-    width: 40%;
-    -moz-transition: top 0.2s;
-    -o-transition: top 0.2s;
-    -webkit-transition: top 0.2s;
-    transition: top 0.2s;
+  margin-right: 6px;
+  width: 40%;
+  -moz-transition: top 0.2s;
+  -o-transition: top 0.2s;
+  -webkit-transition: top 0.2s;
+  transition: top 0.2s;
 }
 
 .invalid span.checklist-edit-box input {
@@ -58,8 +78,8 @@ span.checklist-edit-box input {
 }
 
 span.checklist-edit-reset-button {
-    cursor: pointer;
-    color: #2996CC;
+  cursor: pointer;
+  color: #2996CC;
 }
 
 span.checklist-subject {cursor: pointer;}
@@ -77,7 +97,7 @@ span.checklist-item.edit .checklist-show-only {
   display: none;
 }
 
-div#checklist ol {
+div#checklist ol, div.cf_checklist ol {
   display: inline-block;
   padding-left: 0;
 }
@@ -90,9 +110,17 @@ div#checklist ol {
   border-bottom-color: #eee;
 }
 
+li.cf-checklist-section:first-child, span.checklist-item:first-child {
+  padding-top: 2px !important;
+}
+
+ul.cf_checklist_items li:last-child {
+  margin-bottom: 10px;
+}
+
 .checklist-item.checklist-section > .checklist-checkbox { display: none; }
 
-#checklist_items li.checklist-section {
+#checklist_items li.checklist-section, ul.cf_checklist_items li.checklist-section {
   padding-bottom: 5px;
   margin-bottom: 5px;
 }
@@ -107,20 +135,22 @@ table.list td.checklist_relations { text-align: left }
 /*                        Checklist context menu                             */
 /* ========================================================================= */
 
-#checklist-menu ul, #checklist-menu li, #checklist-menu a {
+#checklist-menu ul, #checklist-menu li, #checklist-menu a,
+#cf-checklist-menu ul, ul.cf-checklist-menu li, ul.cf-checklist-menu a {
   display:block;
   margin:0;
   padding:0;
   border:0;
 }
 
-#checklist-menu {
+#checklist-menu, ul.cf-checklist-menu {
   display: none;
   position: absolute;
   font-size: 0.9em;
 }
 
-#checklist-menu, #checklist-menu ul {
+#checklist-menu, #checklist-menu ul,
+ul.cf-checklist-menu, ul.cf-checklist-menu ul {
   width: 150px;
   border: 1px solid #ccc;
   background: white;
@@ -130,16 +160,16 @@ table.list td.checklist_relations { text-align: left }
   z-index: 10;
 }
 
-#checklist-menu li {
+#checklist-menu li, ul.cf-checklist-menu li {
   position: relative;
   padding: 1px;
   border: 1px solid white;
 }
 
-#checklist-menu a:not(:has(svg)) {
+#checklist-menu a:not(:has(svg)), ul.cf-checklist-menu a:not(:has(svg)) {
   text-decoration: none !important;
   padding: 2px 0px 2px 20px;
 }
 
-#checklist-menu a:hover { color:#2A5685; }
-#checklist-menu li:hover { border:1px solid #628db6; background-color:#eef5fd; border-radius:3px; }
+#checklist-menu a:hover, ul.cf-checklist-menu a:hover { color:#2A5685; }
+#checklist-menu li:hover, ul.cf-checklist-menu li:hover { border:1px solid #628db6; background-color:#eef5fd; border-radius:3px; }

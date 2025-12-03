@@ -26,6 +26,7 @@ module RedmineChecklists
         base.send(:include, InstanceMethods)
         base.class_eval do
           attr_accessor :old_checklists, :removed_checklist_ids, :checklists_from_params
+
           attr_reader :copied_from
 
           alias_method :after_create_from_copy_without_checklists, :after_create_from_copy

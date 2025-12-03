@@ -19,7 +19,7 @@
 
 requires_redmineup version_or_higher: '1.0.10' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
 
-CHECKLISTS_VERSION_NUMBER = '3.1.26'.freeze
+CHECKLISTS_VERSION_NUMBER = '4.0.0'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do

@@ -4,6 +4,18 @@ Redmine Checklists plugin - managing issue checklists plugin for Redmine
 Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
 
+== 2025-10-02 v4.0.0
+
+* Added Checklist format for custom fields
+* Updated API format for checklist custom field format
+* Updated Japanese locale (Hideki Sakamoto)
+
+== 2025-07-09 v3.1.27
+
+* Added Croatian (Hrvatski) locale (Josip Golubić)
+* Added compatibility with a third-party plugin (Dashboard)
+* Added support for very long checklist items
+
 == 2025-03-03 v3.1.26
 
 * Added Redmine 6.0 compatibility

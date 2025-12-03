@@ -42,5 +42,10 @@ ru:
   label_checklist_new_section: Новая секция
   label_checklist_block_issue_closing: Запретить закрытие заявки
   label_checklists: Чеклист
+  label_checklist: Чеклист
   label_checklists_must_be_completed: Чтобы заявка закрылась, должны быть выполнены все пункты чеклиста
   field_checklists: Чеклист
+
+  custom_field_checklist_section: "%{custom_field_name} section"
+  label_cf_checklist_non_unique_subject_error: Пункты чеклиста должны быть уникальными
+  label_cf_checklist_blank_subject_error: Пункт чеклиста не может быть пустым
