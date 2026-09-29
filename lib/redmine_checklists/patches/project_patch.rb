@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -22,18 +22,12 @@ require_dependency 'project'
 module RedmineChecklists
   module Patches
     module ProjectPatch
-      def self.included(base) # :nodoc:
-        base.send(:include, InstanceMethods)
+      def self.prepended(base)
         base.class_eval do
         end
-      end
-
-      module InstanceMethods
       end
     end
   end
 end
 
-unless Project.included_modules.include?(RedmineChecklists::Patches::ProjectPatch)
-  Project.send(:include, RedmineChecklists::Patches::ProjectPatch)
-end
+Project.prepend(RedmineChecklists::Patches::ProjectPatch)

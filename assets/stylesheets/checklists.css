@@ -41,6 +41,13 @@ span.checklist-item {
   margin-bottom: 5px;
 }
 
+span.checklist-item.existing {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
 span.checklist-subject.is-done-checklist-item,
 span.is-done-checklist-item,
 span.checklist-item.is-done-checklist-item,
@@ -54,9 +61,15 @@ span.checklist-remove { margin-left: 2px; opacity: 0.4;}
 
 span.checklist-remove:hover  {opacity: 1;}
 
+span.checklist-edit-box {
+  width: 90%;
+  max-width: 1000px;
+}
+
 span.checklist-edit-box input {
   margin-right: 6px;
-  width: 40%;
+  width: 100%;
+  max-width: 100%;
   -moz-transition: top 0.2s;
   -o-transition: top 0.2s;
   -webkit-transition: top 0.2s;
@@ -77,9 +90,13 @@ span.checklist-edit-box input {
   display: none;
 }
 
-span.checklist-edit-reset-button {
-  cursor: pointer;
+.checklist-new-only.save-new-by-button, 
+a.checklist-action-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
   color: #2996CC;
+  text-decoration: none;
 }
 
 span.checklist-subject {cursor: pointer;}
@@ -158,6 +175,7 @@ ul.cf-checklist-menu, ul.cf-checklist-menu ul {
   padding: 2px;
   border-radius: 2px;
   z-index: 10;
+  overflow: initial;
 }
 
 #checklist-menu li, ul.cf-checklist-menu li {
@@ -173,3 +191,25 @@ ul.cf-checklist-menu, ul.cf-checklist-menu ul {
 
 #checklist-menu a:hover, ul.cf-checklist-menu a:hover { color:#2A5685; }
 #checklist-menu li:hover, ul.cf-checklist-menu li:hover { border:1px solid #628db6; background-color:#eef5fd; border-radius:3px; }
+
+/* ========================================================================= */
+/*                        Checklist custom field                             */
+/* ========================================================================= */
+
+.tabular label.error + span#cf_checklist_custom_field {
+  all: initial;
+}
+
+.tabular label.error + span#cf_checklist_custom_field input {
+  border: 1px solid #bb0000;
+}
+
+div.cf_checklist br { display: none; }
+
+#sidebar div.cf_checklist li {
+  margin-bottom: 10px;
+}
+
+#sidebar div.cf_checklist li input[type=checkbox] {
+  block-size: auto;
+}

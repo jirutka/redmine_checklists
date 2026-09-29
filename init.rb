@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -17,9 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmineup version_or_higher: '1.0.10' rescue raise "\n\033[31mRedmine requires newer redmineup gem version.\nPlease update with 'bundle update redmineup'.\033[0m"
-
-CHECKLISTS_VERSION_NUMBER = '4.0.0'.freeze
+CHECKLISTS_VERSION_NUMBER = '4.1.0'.freeze
 CHECKLISTS_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_checklists do
@@ -31,6 +29,7 @@ Redmine::Plugin.register :redmine_checklists do
   author_url 'mailto:support@redmineup.com'
 
   requires_redmine version_or_higher: '4.0'
+  requires_redmineup version_or_higher: '1.1.12'
 
   settings default: {
     save_log: true,

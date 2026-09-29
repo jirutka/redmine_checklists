@@ -35,6 +35,8 @@ ru:
   label_checklist_status: Статус пункта чеклиста
   label_checklist_status_done: Выполнен
   label_checklist_status_undone: Не выполнен
+  label_checklist_status_done_downcase: выполнен
+  label_checklist_status_undone_downcase: не выполнен
   label_checklist_is_default: По умолчанию
   field_is_for_tracker: Трекер
   label_checklist_show_closed: Показать закрытые

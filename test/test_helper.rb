@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -53,15 +53,9 @@ module RedmineChecklists
   end
 end
 
-include RedmineChecklists::TestHelper
-
 class RedmineChecklists::IntegrationTest < Redmine::IntegrationTest; end
 
 class RedmineChecklists::TestCase
-  def self.create_fixtures(fixtures_directory, table_names, class_names = {})
-    ActiveRecord::FixtureSet.create_fixtures(fixtures_directory, table_names, class_names = {})
-  end
-
   def self.prepare
     Role.find([1,2]).each do |r| # For anonymous
       r.permissions << :view_checklists

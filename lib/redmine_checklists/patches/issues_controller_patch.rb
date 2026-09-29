@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -19,69 +19,70 @@
 
 module RedmineChecklists
   module Patches
-
     module IssuesControllerPatch
-      def self.included(base) # :nodoc:
-        base.send(:include, InstanceMethods)
+      def self.prepended(base)
         base.class_eval do
-          alias_method :build_new_issue_from_params_without_checklist, :build_new_issue_from_params
-          alias_method :build_new_issue_from_params, :build_new_issue_from_params_with_checklist
+          helper :checklists
+          include ChecklistsHelper
+
           before_action :save_before_state, :only => [:update]
         end
       end
 
-      module InstanceMethods
-        def build_new_issue_from_params_with_checklist
-          if params[:id].blank?
-            begin
-              if params[:copy_from].blank?
-              else
-                fill_checklist_attributes
-              end
-            rescue ActiveRecord::RecordNotFound
-              render_404
-              return
-            end
-          end
-          build_new_issue_from_params_without_checklist
-          @issue.checklists_from_params = true
-        end
-
-        def save_before_state
-          @issue.old_checklists = @issue.checklists.to_json
-          checklists_params = params.dig(:issue, :checklists_attributes) || {}
-          @issue.removed_checklist_ids =
-            if checklists_params.present?
-              checklists_params = checklists_params.to_unsafe_hash if checklists_params.respond_to?(:to_unsafe_hash)
-              checklists_params.map { |_k, v| v['id'].to_i if ['1', 'true'].include?(v['_destroy']) }.compact
+      def build_new_issue_from_params
+        if params[:id].blank?
+          begin
+            if params[:copy_from].blank?
             else
-              []
+              fill_checklist_attributes
             end
-        end
-
-        def fill_checklist_attributes
-          return unless params[:issue].blank?
-
-          @copy_from = Issue.visible.find(params[:copy_from])
-          add_checklists_to_params(@copy_from.checklists)
-        end
-
-        def add_checklists_to_params(checklists)
-          params[:issue].blank? ? params[:issue] = { :checklists_attributes => {} } : params[:issue][:checklists_attributes] = {}
-          checklists.each_with_index do |checklist_item, index|
-            params[:issue][:checklists_attributes][index.to_s] = {
-              is_done: checklist_item.is_done,
-              subject: checklist_item.subject,
-              position: checklist_item.position,
-              is_section: checklist_item.is_section
-            }
+          rescue ActiveRecord::RecordNotFound
+            render_404
+            return
           end
+        end
+        super
+        @issue.checklists_from_params = true
+      end
+
+      def save_before_state
+        @issue.old_checklists = @issue.checklists.to_json
+        checklists_params = params.dig(:issue, :checklists_attributes) || {}
+        @issue.removed_checklist_ids =
+          if checklists_params.present?
+            checklists_params = checklists_params.to_unsafe_hash if checklists_params.respond_to?(:to_unsafe_hash)
+            checklists_params.map { |_k, v| v['id'].to_i if ['1', 'true'].include?(v['_destroy']) }.compact
+          else
+            []
+          end
+      end
+
+      def fill_checklist_attributes
+        return unless params[:issue].blank?
+
+        @copy_from = Issue.visible.find(params[:copy_from])
+        add_checklists_to_params(@copy_from.checklists)
+      end
+
+      def add_checklists_to_params(checklists)
+        params[:issue].blank? ? params[:issue] = { :checklists_attributes => {} } : params[:issue][:checklists_attributes] = {}
+        checklists.each_with_index do |checklist_item, index|
+          params[:issue][:checklists_attributes][index.to_s] = {
+            is_done: checklist_item.is_done,
+            subject: checklist_item.subject,
+            position: checklist_item.position,
+            is_section: checklist_item.is_section
+          }
         end
       end
     end
   end
 end
 
-unless IssuesController.included_modules.include?(RedmineChecklists::Patches::IssuesControllerPatch)
-  IssuesController.send(:include, RedmineChecklists::Patches::IssuesControllerPatch)
+if Redmine::VERSION::MAJOR >= 5
+  IssuesController.prepend(RedmineChecklists::Patches::IssuesControllerPatch)
+else
+  Rails.application.config.to_prepare do
+    IssuesController.prepend(RedmineChecklists::Patches::IssuesControllerPatch)
+  end
 end

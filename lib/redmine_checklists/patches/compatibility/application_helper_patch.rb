@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -20,17 +20,11 @@
 module RedmineChecklists
   module Patches
     module ApplicationHelperPatch
-      def self.included(base) # :nodoc:
-        base.class_eval do
-          def stocked_reorder_link(object, name = nil, url = {}, method = :post)
-            Redmine::VERSION.to_s > '3.3' ? reorder_handle(object, :param => name) : reorder_links(name, url, method)
-          end
-        end
+      def stocked_reorder_link(object, name = nil, url = {}, method = :post)
+        Redmine::VERSION.to_s > '3.3' ? reorder_handle(object, :param => name) : reorder_links(name, url, method)
       end
     end
   end
 end
 
-unless ApplicationHelper.included_modules.include?(RedmineChecklists::Patches::ApplicationHelperPatch)
-  ApplicationHelper.send(:include, RedmineChecklists::Patches::ApplicationHelperPatch)
-end
+ApplicationHelper.prepend(RedmineChecklists::Patches::ApplicationHelperPatch)

@@ -8,19 +8,23 @@
   </span>
 
   <span class="checklist-edit checklist-new checklist-edit-box">
-    <%= text_field_tag nil, f.object.subject, class: 'edit-box' %>
+    <%= text_field_tag nil, f.object.subject, class: 'edit-box', size: 60 %>
     <%= f.hidden_field :subject, class: 'checklist-subject-hidden' %>
   </span>
 
-  <span class="checklist-edit-only checklist-edit-save-button"><%= submit_tag l(:button_save), type: 'button', class: 'item item-save small' %> </span>
-  <span class="checklist-edit-only checklist-edit-reset-button"><% concat l(:button_cancel) %> </span>
+  <span class="checklist-edit-only checklist-edit-save-button">
+    <%= link_to sprite_icon('save', ''), 'javascript:void(0)', class: 'icon-only icon-save checklist-action-link' %>
+  </span>
+  <span class="checklist-edit-only checklist-edit-reset-button">
+    <%= link_to sprite_icon('cancel', ''), 'javascript:void(0)', class: 'icon-only icon-cancel checklist-action-link' %>
+  </span>
   <span class="checklist-show-only checklist-remove"><%= link_to_remove_checklist_fields sprite_icon('del', ''), f, class: 'icon icon-del' %></span>
 
   <%= f.hidden_field :position, class: 'checklist-item-position' %>
   <%= f.hidden_field :is_section, class: 'checklist-item-is_section' %>
   <%= f.hidden_field :id, class: 'checklist-item-id' %>
 
-  <span class="icon icon-add checklist-new-only save-new-by-button">
+  <span class="icon-only icon-add checklist-new-only save-new-by-button">
     <%= sprite_icon('add') %>
   </span>
 

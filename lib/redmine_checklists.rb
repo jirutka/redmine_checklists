@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -37,7 +37,6 @@ REDMINE_CHECKLISTS_REQUIRED_FILES = [
   'redmine_checklists/patches/issue_patch',
   'redmine_checklists/patches/project_patch',
   'redmine_checklists/patches/issues_controller_patch',
-  'redmine_checklists/patches/helper_for_checklists_patch',
   'redmine_checklists/patches/issues_helper_patch',
   'redmine_checklists/patches/compatibility/open_struct_patch',
 ]

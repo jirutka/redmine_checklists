@@ -1,7 +1,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -20,75 +20,60 @@
 module RedmineChecklists
   module Patches
     module IssuesHelperPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-
-        base.class_eval do
-          alias_method :details_to_strings_without_checklists, :details_to_strings
-          alias_method :details_to_strings, :details_to_strings_with_checklists
+      def details_to_strings(details, no_html = false, options = {})
+        custom_field_checklist_ids = (@issue&.available_custom_fields || []).select { |cf| cf.field_format == 'checklist' }.pluck(:id)
+        details_checklist, details_other = details.partition{ |x| x.prop_key == 'checklist' || custom_field_checklist_ids.include?(x.prop_key.to_i) }
+        if @issue.nil? || !User.current.allowed_to?(:view_checklists, @issue.try(:project), global: @issue.present?)
+          return super(details_other, no_html, options)
         end
-      end
 
+        details_checklist.map do |detail|
+          result = []
+          diff = Hash.new([])
 
-      module InstanceMethods
-
-        def details_to_strings_with_checklists(details, no_html = false, options = {})
-          custom_field_checklist_ids = @issue.available_custom_fields.select { |cf| cf.field_format == 'checklist' }.pluck(:id)
-          details_checklist, details_other = details.partition{ |x| x.prop_key == 'checklist' || custom_field_checklist_ids.include?(x.prop_key.to_i) }
-          if @issue.nil? || !User.current.allowed_to?(:view_checklists, @issue.try(:project), global: @issue.present?)
-            return details_to_strings_without_checklists(details_other, no_html, options)
+          if detail.custom_field.present?
+            item_name = { name: detail.custom_field.name, section: l(:custom_field_checklist_section, custom_field_name: detail.custom_field.name) }
+          else
+            item_name = { name: l(:label_checklist_item), section: l(:label_checklist_item) }
           end
 
-          details_checklist.map do |detail|
-            result = []
-            diff = Hash.new([])
 
-            if detail.custom_field.present?
-              item_name = { name: detail.custom_field.name, section: l(:custom_field_checklist_section, custom_field_name: detail.custom_field.name) }
-            else
-              item_name = { name: l(:label_checklist_item), section: l(:label_checklist_item) }
+          if Checklist.old_format?(detail)
+            result << "<b>#{item_name[:name]}</b> #{l(:label_checklist_changed_from)} #{detail.old_value} #{l(:label_checklist_changed_to)} #{detail.value}"
+          else
+            diff = custom_field_checklist_ids.include?(detail.prop_key.to_i) ? JournalCustomFieldChecklistHistory.new(detail.old_value, detail.value).diff : JournalChecklistHistory.new(detail.old_value, detail.value).diff
+          end
+
+          checklist_item_label = lambda do |item|
+            item[:is_section] ? item_name[:section] : item_name[:name]
+          end
+
+          if diff[:done].any?
+            diff[:done].each do |item|
+              result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_done)}"
             end
+          end
 
-
-            if Checklist.old_format?(detail)
-              result << "<b>#{item_name[:name]}</b> #{l(:label_checklist_changed_from)} #{detail.old_value} #{l(:label_checklist_changed_to)} #{detail.value}"
-            else
-              diff = custom_field_checklist_ids.include?(detail.prop_key.to_i) ? JournalCustomFieldChecklistHistory.new(detail.old_value, detail.value).diff : JournalChecklistHistory.new(detail.old_value, detail.value).diff
+          if diff[:undone].any?
+            diff[:undone].each do |item|
+              result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_undone)}"
             end
+          end
 
-            checklist_item_label = lambda do |item|
-              item[:is_section] ? item_name[:section] : item_name[:name]
-            end
-
-            if diff[:done].any?
-              diff[:done].each do |item|
-                result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_done)}"
-              end
-            end
-
-            if diff[:undone].any?
-              diff[:undone].each do |item|
-                result << "<b>#{ERB::Util.h item_name[:name]}</b> <input type='checkbox' class='checklist-checkbox' #{item.is_done ? 'checked' : '' } disabled> <i>#{ERB::Util.h item[:subject]}</i> #{ERB::Util.h l(:label_checklist_undone)}"
-              end
-            end
-
-            result = result.join('</li><li>').html_safe
-            result = nil if result.blank?
-            if result && no_html
-              result = result.gsub /<\/li><li>/, "\n"
-              result = result.gsub /<input type='checkbox' class='checklist-checkbox'[^c^>]*checked[^>]*>/, '[x]'
-              result = result.gsub /<input type='checkbox' class='checklist-checkbox'[^c^>]*>/, '[ ]'
-              result = result.gsub /<[^>]*>/, ''
-              result = CGI.unescapeHTML(result)
-            end
-            result
-          end.compact + details_to_strings_without_checklists(details_other, no_html, options)
-        end
+          result = result.join('</li><li>').html_safe
+          result = nil if result.blank?
+          if result && no_html
+            result = result.gsub(/<\/li><li>/, "\n")
+            result = result.gsub(/<input type='checkbox' class='checklist-checkbox'[^c^>]*checked[^>]*>/, '[x]')
+            result = result.gsub(/<input type='checkbox' class='checklist-checkbox'[^c^>]*>/, '[ ]')
+            result = result.gsub(/<[^>]*>/, '')
+            result = CGI.unescapeHTML(result)
+          end
+          result
+        end.compact + super(details_other, no_html, options)
       end
     end
   end
 end
 
-unless IssuesHelper.included_modules.include?(RedmineChecklists::Patches::IssuesHelperPatch)
-  IssuesHelper.send(:include, RedmineChecklists::Patches::IssuesHelperPatch)
-end
+IssuesHelper.prepend(RedmineChecklists::Patches::IssuesHelperPatch)

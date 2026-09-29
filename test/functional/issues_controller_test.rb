@@ -3,7 +3,7 @@
 # This file is a part of Redmine Checklists (redmine_checklists) plugin,
 # issue checklists management plugin for Redmine
 #
-# Copyright (C) 2011-2025 RedmineUP
+# Copyright (C) 2011-2026 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_checklists is free software: you can redistribute it and/or modify
@@ -49,7 +49,8 @@ class IssuesControllerTest < ActionController::TestCase
            :journal_details,
            :queries
 
-  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
+  load_plugin_fixtures :redmine_checklists,
+                       :checklists
 
   def setup
     @request.session[:user_id] = 1
@@ -65,7 +66,8 @@ class IssuesControllerTest < ActionController::TestCase
       }
     }
     RedmineChecklists::TestCase.prepare
-    @custom_field_checklist = Issue.find(1).available_custom_fields.detect { |custom_field| custom_field.name == 'Test checklist' }
+    @issue = Issue.find(1)
+    @custom_field_checklist = @issue.available_custom_fields.detect { |custom_field| custom_field.name == 'Test checklist' }
   end
 
   def test_new_issue_without_project
@@ -74,8 +76,7 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_get_show_issue
-    issue = Issue.find(1)
-    assert_not_nil issue.checklists.first
+    assert_not_nil @issue.checklists.first
     compatible_request(:get, :show, :id => 1)
     assert_response :success
     assert_select "ul#checklist_items li#checklist_item_1", /First todo/
@@ -101,9 +102,7 @@ class IssuesControllerTest < ActionController::TestCase
                     "0" => {"is_done"=>"0", "subject"=>"FirstChecklist"},
                     "1" => {"is_done"=>"0", "subject"=>"Second"}}}
 
-    @request.session[:user_id] = 1
-    issue = Issue.find(1)
-    compatible_xhr_request :put, :new, :issue => parameters, :project_id => issue.project
+    compatible_xhr_request :put, :new, :issue => parameters, :project_id => @issue.project
     assert_response :success
     assert_match 'text/javascript', response.content_type
     assert_match 'FirstChecklist', response.body
@@ -116,45 +115,39 @@ class IssuesControllerTest < ActionController::TestCase
                    :checklists_attributes => {
                      '0' => { 'is_done' => '0', 'subject' => 'First' },
                      '1' => { 'is_done' => '0', 'subject' => 'Second' } } }
-    @request.session[:user_id] = 1
-    issue = Issue.find(1)
+
     compatible_request :post, :update, :issue => parameters,
                                        :attachments => { '1' => { 'file' => uploaded_test_file('testfile.txt', 'text/plain'), 'description' => 'test file' } },
-                                       :project_id => issue.project,
-                                       :id => issue.to_param
+                                       :project_id => @issue.project,
+                                       :id => @issue.to_param
     assert_response :redirect
     assert_equal 1, Journal.last.details.where(:property => 'attachment').count
   end
 
   def test_history_dont_show_old_format_checklists
     Setting[:plugin_redmine_checklists] = { :save_log => 1, :issue_done_ratio => 0 }
-    @request.session[:user_id] = 1
-    issue = Issue.find(1)
-    issue.journals.create!(:user_id => 1)
-    issue.journals.last.details.create!(:property =>  'attr',
+    @issue.journals.create!(:user_id => 1)
+    @issue.journals.last.details.create!(:property =>  'attr',
                                         :prop_key =>  'checklist',
                                         :old_value => '[ ] TEST',
                                         :value =>     '[x] TEST')
 
-    compatible_request :post, :show, :id => issue.id
+    compatible_request :post, :show, :id => @issue.id
     assert_response :success
-    last_journal = issue.journals.last
+    last_journal = @issue.journals.last
     assert_equal last_journal.details.size, 1
     assert_equal last_journal.details.first.prop_key, 'checklist'
     assert_select "#change-#{last_journal.id} ul li", 'Checklist item changed from [ ] TEST to [x] TEST'
   end
 
   def test_empty_update_dont_write_to_journal
-    @request.session[:user_id] = 1
-    issue = Issue.find(1)
-    journals_before = issue.journals.count
-    compatible_request :post, :update, :issue => {}, :id => issue.to_param, :project_id => issue.project
+    journals_before = @issue.journals.count
+    compatible_request :post, :update, :issue => {}, :id => @issue.to_param, :project_id => @issue.project
     assert_response :redirect
-    assert_equal journals_before, issue.reload.journals.count
+    assert_equal journals_before, @issue.reload.journals.count
   end
 
   def test_create_issue_without_checklists
-    @request.session[:user_id] = 1
     assert_difference 'Issue.count' do
       compatible_request :post, :create, :project_id => 1, :issue => { :tracker_id => 3,
                                                                        :status_id => 2,
@@ -169,7 +162,6 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_create_issue_with_checklists
-    @request.session[:user_id] = 1
     assert_difference 'Issue.count' do
       compatible_request :post, :create, :project_id => 1, :issue => { :tracker_id => 3,
                                                                        :status_id => 2,
@@ -187,7 +179,6 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_delete_issue_with_checklists
-    @request.session[:user_id] = 1
     other_checklist = Checklist.first
     other_checklist.update(position: 2)
 
@@ -203,7 +194,6 @@ class IssuesControllerTest < ActionController::TestCase
   def test_create_issue_using_json
     old_value = Setting.rest_api_enabled
     Setting.rest_api_enabled = '1'
-    @request.session[:user_id] = 1
     assert_difference 'Issue.count' do
       compatible_request :post, :create, :format => :json, :project_id => 1, :issue => { :tracker_id => 3,
                                                                                          :status_id => 2,
@@ -223,25 +213,22 @@ class IssuesControllerTest < ActionController::TestCase
   end
 
   def test_history_displaying_for_checklist
-    @request.session[:user_id] = 1
     Setting[:plugin_redmine_checklists] = { save_log: 1, issue_done_ratio: 0 }
 
-    issue = Issue.find(1)
-    journal = issue.journals.create!(user_id: 1)
+    journal = @issue.journals.create!(user_id: 1)
     journal.details.create!(:property =>  'attr',
                             :prop_key =>  'checklist',
                             :old_value => '[ ] TEST',
                             :value =>     '[x] TEST')
 
     # With permissions
-    @request.session[:user_id] = 1
-    compatible_request :get, :show, id: issue.id
+    compatible_request :get, :show, id: @issue.id
     assert_response :success
     assert_include 'changed from [ ] TEST to [x] TEST', response.body
 
     # Without permissions
     @request.session[:user_id] = 5
-    compatible_request :get, :show, id: issue.id
+    compatible_request :get, :show, id: @issue.id
     assert_response :success
     assert_not_include 'changed from [ ] TEST to [x] TEST', response.body
   end
@@ -249,7 +236,7 @@ class IssuesControllerTest < ActionController::TestCase
   def test_bulk_copy_issues_with_checklists
     @target_project = Project.find(2)
     @target_project.issues.destroy_all
-    issue1 = Issue.find(1) # issue with checklists
+    issue1 = @issue # issue with checklists
     issue3 = Issue.find(3) # issue without checklists
 
     @request.session[:user_id] = 2

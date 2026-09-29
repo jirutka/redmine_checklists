@@ -1,8 +1,30 @@
 == Redmine Checklists plugin changelog
 
 Redmine Checklists plugin - managing issue checklists plugin for Redmine
-Copyright (C) 2011-2025 Kirill Bezrukov (RedmineUP)
+Copyright (C) 2011-2026 Kirill Bezrukov (RedmineUP)
 http://www.redmineup.com/
+
+== 2026-09-02 v4.1.0
+
+* Switched core patches loading from include to prepend
+* Updated style for contact checklist custom field
+
+== 2026-07-28 v4.0.3
+
+* Fixed filtering issues by custom fields (numeric, float and "none" list value)
+* Fixed missing "Add" button for checklist templates
+* Fixed checklist templates submenu not visible with the Circle theme on Redmine 6.1.2
+* Fixed missing save, cancel and add icons for checklist items on Redmine 5
+
+== 2026-03-18 v4.0.2
+
+* Added multiline paste for checklist items
+
+== 2026-01-22 v4.0.1
+
+* Added support for checklist custom fields in other Redmine classes
+* Updated checklist format for custom fields
+* Updated CSS styles for checklist custom fields
 
 == 2025-10-02 v4.0.0
 

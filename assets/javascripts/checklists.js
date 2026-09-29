@@ -174,6 +174,29 @@ Redmine.Checklist = $.klass({
     this.addChecklistFields();
   },
 
+  onPasteInChecklistItem: function() {
+    this.root.on('paste', 'input.edit-box', $.proxy(function(event) {
+      var clipboardData = (event.originalEvent || event).clipboardData;
+      var pastedText = clipboardData ? clipboardData.getData('text/plain') : '';
+
+      if (pastedText && (pastedText.indexOf('\n') !== -1 || pastedText.indexOf('\r') !== -1)) {
+        this.preventEvent(event);
+        var existedItems = this.root.find('.checklist-item:visible:not(.fade-out) .checklist-subject').map((_idx, item) => $(item).text().trim())
+        var lines = new Set(pastedText.split(/\r?\n/).map(item => item.trim())).difference(new Set(existedItems));
+
+        lines.forEach(function(line) {
+          if (line.length == 0) return
+
+          this.root.find('.checklist-item.new input.edit-box, .checklist-item.edit input.edit-box')
+                   .last()
+                   .val(line)
+                   .trigger($.Event('keydown', { key: 'Enter', which: 13, keyCode: 13 }));
+
+        }, this);
+      }
+    }, this));
+  },
+
   canSave: function(span) {
     return (!span.hasClass('invalid')) && (span.find('input.edit-box').val().length > 0)
   },
@@ -368,14 +391,14 @@ Redmine.Checklist = $.klass({
 
   enableUniquenessValidation: function() {
     this.root.on('input', 'input.edit-box', $.proxy(function(event) {
-      value = $(event.target).val()
+      value = $(event.target).val().trim()
       span = this.findSpan(event)
       span.removeClass('invalid')
       $(`#${this.root.attr('id')} .checklist-item.existing`).each(function(i, elem) {
         e = $(elem)
         if (!e.is('.edit') && !e.is('.new'))
         {
-          if ( (value == e.find('.edit-box').val()) )
+          if ( (value == e.find('.edit-box').val().trim()) )
           {
             span.addClass('invalid')
           }
@@ -436,6 +459,7 @@ Redmine.Checklist = $.klass({
     this.onCheckboxChanged();
     this.onChangeCheckbox();
     this.enableUniquenessValidation();
+    this.onPasteInChecklistItem();
   }
 
 })
@@ -506,4 +530,67 @@ $(document).ready(function () {
     $(this).removeAttr('data_url');
     $(this).attr('disabled', 'disabled')
   });
+  if (typeof(buildFilterRow) === 'function' && typeof(toggleOperator) === 'function') {
+    var originBuildFilterRow = buildFilterRow;
+    var originToggleOperator = toggleOperator;
+    buildFilterRow = function(field, operator, values) {
+      originBuildFilterRow(field, operator, values);
+
+      var fieldId = field.replace('.', '_');
+      var filterOptions = availableFilters[field];
+      if (!filterOptions) return;
+
+      if (filterOptions['type'].length > 0 && filterOptions['type'] === "checklist") {
+        $(`div#tr_${fieldId}`).find('.values').append(
+            $('<span>', { style: "display:none;" }).append(
+                $('<input>', {
+                  type: "text",
+                  name: `v[${field}][]`,
+                  id: `values_${fieldId}`,
+                  size: "30",
+                  class: "value"
+                })
+            )
+        );
+        $('#values_'+fieldId).val(values[0]);
+      }
+    }
+    toggleOperator = function(field) {
+      originToggleOperator(field)
+
+      var fieldId = field.replace('.', '_');
+      var operator = $("#operators_" + fieldId);
+      var doneInput = function(value) {
+        return $('<input>', {
+          type: "hidden",
+          value: value,
+          name: `v[${field}][]`,
+          id: `values_${fieldId}`,
+          size: "30",
+          class: "value",
+        })
+      }
+
+      switch (operator.val()) {
+        case "is_undone":
+          enableValues(field, []);
+          $(`div#tr_${fieldId}`).find('.values span input').replaceWith(
+              doneInput('0')
+          );
+          break;
+        case "is_done":
+          enableValues(field, []);
+          $(`div#tr_${fieldId}`).find('.values span input').replaceWith(
+              doneInput('1')
+          );
+          break;
+        default:
+          var hiddenInput = $(`div#tr_${fieldId}`).find('.values span input[type="hidden"]');
+          if (hiddenInput.length > 0) {
+            hiddenInput.attr('type', 'text')
+            hiddenInput.attr('value', '')
+          }
+      }
+    }
+  }
 });
